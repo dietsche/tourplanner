@@ -167,7 +167,7 @@ export function Map({ onPositionChange }) {
                         lat: 52.5024756,
                         lng: 13.4850351
                     }}
-                    onClick={event => {
+                    onDblClick={event => {
                         getPosition(event);
                     }}
                     icon={{

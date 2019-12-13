@@ -8,11 +8,11 @@ import DirectionsBikeIcon from "@material-ui/icons/DirectionsBike";
 
 const Card = styled.div`
     width: 45vw;
-    min-widht: 150px;
+    min-widht: 170px;
     max-width: 210px;
-    height: 45vw;
-    min-height: 150px;
-    max-height: 210px;
+    height: 42vw;
+    min-height: 160px;
+    max-height: 200px;
     margin: 2vw;
     box-shadow: 1px 1px 3px;
     border-radius: 3px;
@@ -22,13 +22,14 @@ const Card = styled.div`
     align-items: center;
     overflow: hidden;
     .title {
-        font-size: 14px;
+        font-size: calc(13px + 0.2vw);
         font-weight: bold;
-        margin: 5px 12px;
+        margin: calc(5px + 0.5vw) 12px 5px 12px;
     }
     .description {
-        font-size: 13px;
+        font-size: calc(12px + 0.15vw);
         margin: 5px 12px;
+        text-align: center;
     }
     .distance-container {
         width: 100%;
@@ -55,13 +56,15 @@ const Card = styled.div`
 
 export default function ResultCard(props) {
     let descriptionPreview = props.description;
+    let lengthPreview = 3 + document.documentElement.clientWidth / 150;
     let indices = [];
     for (let i = 0; i < descriptionPreview.length; i++) {
         if (descriptionPreview[i] === " ") indices.push(i);
     }
+
     console.log(indices.length);
-    if (indices.length > 6) {
-        for (let i = 0; i < indices.length - 6; i++) {
+    if (indices.length > lengthPreview) {
+        for (let i = 0; i < indices.length - lengthPreview; i++) {
             let res = descriptionPreview.split(" "); //split by space
             res.pop(); //remove last element
             descriptionPreview = res.join(" ") + " [...]";

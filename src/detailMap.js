@@ -1,4 +1,5 @@
-import React, { useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
+
 import {
     withGoogleMap,
     withScriptjs,
@@ -9,13 +10,26 @@ import {
 import { Link } from "react-router-dom";
 
 export function Map({ filteredDestinations, id }) {
+    const [markers, setMarkers] = useState([{}]);
+
+    useEffect(() => {
+        for (let i = 0; i < filteredDestinations.length; i++) {
+            setMarkers(markers => {
+                return { ...markers, [i]: false };
+            });
+        }
+    }, []);
+
     filteredDestinations.map(dest => {
         console.log(dest);
     });
     let url = `/img/robin.png`;
-    let filteredDestinationsWithoutId = filteredDestinations.filter(
-        dest => dest.id == [id - 1]
-    );
+    let filteredDestinationsWithoutId = [];
+    filteredDestinations.forEach((item, index) => {
+        if (index !== id - 1) {
+            filteredDestinationsWithoutId.push(item);
+        }
+    });
     filteredDestinationsWithoutId.map(dest => {
         console.log("without id: ", dest);
     });
@@ -23,7 +37,15 @@ export function Map({ filteredDestinations, id }) {
         "filteredDestinationsWithoutId ",
         filteredDestinationsWithoutId
     );
+    let latCurrent =
+        Math.round(filteredDestinations[id - 1].lat * 10000) / 10000;
+    let longCurrent =
+        Math.round(filteredDestinations[id - 1].long * 10000) / 10000;
 
+    function handleMarkerClick(id) {
+        console.log("dest.id - showINfo: ", id);
+        console.log("marrkers: ", markers);
+    }
     return (
         <div>
             <GoogleMap
@@ -32,7 +54,7 @@ export function Map({ filteredDestinations, id }) {
                     mapTypeControl: false
                 }}
                 defaultZoom={11}
-                defaultCenter={{ lat: 52.52, lng: 13.405 }}
+                defaultCenter={{ lat: latCurrent, lng: longCurrent }}
                 filteredDestinations={filteredDestinations}
                 id={id}
 
@@ -45,52 +67,63 @@ export function Map({ filteredDestinations, id }) {
                             lat: Math.round(dest.lat * 10000) / 10000,
                             lng: Math.round(dest.long * 10000) / 10000
                         }}
-                        // onClick={event => {
-                        //     console.log(event);
-                        // }}
+                        onClick={() => {
+                            handleMarkerClick(dest.id);
+                        }}
+                        onMouseOver={() => {
+                            setMarkers(markers => {
+                                return { ...markers, [dest.id - 1]: true };
+                            });
+                        }}
+                        onMouseOut={() => {
+                            setTimeout(() => {
+                                setMarkers(markers => {
+                                    return { ...markers, [dest.id - 1]: false };
+                                });
+                            }, 2500);
+                        }}
                         icon={{
                             url: url,
                             scaledSize: new window.google.maps.Size(25, 25)
                         }}
                     >
                         <Link to={{ pathname: "/details/" + dest.id }}>
-                            <InfoWindow>
-                                <p>{dest.title}</p>
-                            </InfoWindow>
+                            {markers[dest.id - 1] && (
+                                <InfoWindow>
+                                    <p
+                                        style={{
+                                            fontSize: 12,
+                                            color: "blue",
+                                            textDecoration: "underline"
+                                        }}
+                                    >
+                                        {dest.title}
+                                    </p>
+                                </InfoWindow>
+                            )}
                         </Link>
                     </Marker>
                 ))}
                 <Marker
                     key={filteredDestinations[id - 1]}
                     position={{
-                        lat:
-                            Math.round(
-                                filteredDestinations[id - 1].lat * 10000
-                            ) / 10000,
-                        lng:
-                            Math.round(
-                                filteredDestinations[id - 1].long * 10000
-                            ) / 10000
+                        lat: latCurrent,
+                        lng: longCurrent
                     }}
-                    // onClick={event => {
-                    //     console.log(event);
-                    // }}
+                    onClick={event => {
+                        handleMarkerClick(event);
+                    }}
                     icon={{
                         url: "/img/logo.png",
-                        scaledSize: new window.google.maps.Size(25, 25)
+                        scaledSize: new window.google.maps.Size(25, 30)
                     }}
                 >
                     <Link
                         to={{
                             pathname: "/details/" + filteredDestinations[id - 1]
                         }}
-                    >
-                        <InfoWindow>
-                            <p>{filteredDestinations[id - 1].title}</p>
-                        </InfoWindow>
-                    </Link>
+                    ></Link>
                 </Marker>
-                ))}
             </GoogleMap>
         </div>
     );

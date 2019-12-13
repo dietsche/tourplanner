@@ -4,6 +4,16 @@ import styled from "styled-components";
 import DetailMap from "./detailMap";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
+const DetailsContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    .exit {
+        font-size: calc(20px + 1vw);
+        position: absolute;
+        left: calc(100vw - 30px);
+    }
+`;
+
 export function Details({ filteredDestinations, match }) {
     const [lat, setLat] = useState();
     const [long, setLong] = useState();
@@ -24,20 +34,16 @@ export function Details({ filteredDestinations, match }) {
 
     return (
         <>
-            <h1>{filteredDestinations[id - 1].title}</h1>
-            <h1>X</h1>
-            <p>
-                <strong>Match Props: </strong>
-                <code>{JSON.stringify(location)}</code>{" "}
-            </p>
-            <p>
-                <strong>Location Props: </strong>
-            </p>
-            <div>Map: center on current location</div>
-            <DetailMap
-                filteredDestinations={filteredDestinations}
-                id={id}
-            ></DetailMap>
+            <DetailsContainer>
+                <span className="exit">&times;</span>
+                <h1>{filteredDestinations[id - 1].title}</h1>
+
+                <p>{filteredDestinations[id - 1].description}</p>
+                <DetailMap
+                    filteredDestinations={filteredDestinations}
+                    id={id}
+                ></DetailMap>
+            </DetailsContainer>
         </>
     );
 }
