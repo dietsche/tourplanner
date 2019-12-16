@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import axios from "./axios"; //not directly from axis, but our own version
 import styled from "styled-components";
 import { ThemeProvider } from "styled-components";
@@ -33,6 +34,13 @@ const AddCardContainer = styled.div`
     flex-wrap: wrap;
     align-content: start;
     background-color: white;
+    color: rgb(41, 84, 110);
+    .exit {
+        font-size: calc(26px + 1vw);
+        position: absolute;
+        left: calc(100vw - 30px);
+        color: rgb(41, 84, 110);
+    }
     h1 {
         width: 100%;
         font-size: 16px;
@@ -49,7 +57,6 @@ const AddCardContainer = styled.div`
         margin: 10px 7px;
         padding: 5px;
         border-radius: 3px;
-        width: 160px;
         height: 22px;
         font-size: 14px;
     }
@@ -59,7 +66,7 @@ const AddCardContainer = styled.div`
     }
 
     .street {
-        max-width: 60%;
+        width: 60%;
     }
     .nr {
         width: 20%;
@@ -68,7 +75,7 @@ const AddCardContainer = styled.div`
         width: 30%;
     }
     .city {
-        max-width: 50%;
+        width: 50%;
     }
     .distance {
         width: 85px;
@@ -81,9 +88,10 @@ const AddCardContainer = styled.div`
     > button {
         margin: auto;
     }
-    .onclick {
+    .on-click {
         cursor: pointer;
-        color: blue;
+        color: rgb(238, 56, 64);
+        text-decoration: underline;
     }
     .coordinates-saved {
         color: green;
@@ -249,6 +257,10 @@ export default function AddCard() {
     return (
         <BackgroundLayer>
             <AddCardContainer>
+                <Link to={{ pathname: "/" }}>
+                    <span className="exit">&times;</span>
+                </Link>
+
                 <h1>Add Destination</h1>
                 <input
                     required
@@ -269,7 +281,7 @@ export default function AddCard() {
                 {!locationSuccess && (
                     <h2>
                         Enter Address or{" "}
-                        <span className="onclick" onClick={changeMapView}>
+                        <span className="on-click" onClick={changeMapView}>
                             locate on map
                         </span>
                     </h2>
@@ -447,7 +459,10 @@ export default function AddCard() {
                 <h2></h2>
                 <Button
                     variant="outlined"
-                    color="primary"
+                    style={{
+                        backgroundColor: "rgb(238, 56, 64)",
+                        color: "white"
+                    }}
                     onClick={() => submit()}
                 >
                     Save

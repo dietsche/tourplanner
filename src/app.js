@@ -18,7 +18,7 @@ const Header = styled.div`
     display: flex;
     justify-content: space-between;
     height: 25px;
-    background-color: rgb(40, 40, 40);
+    background-color: rgb(41, 84, 110);
     padding: 15px;
     > span {
         display: flex;
@@ -35,12 +35,13 @@ const Header = styled.div`
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 30px;
-        width: 30px;
+        height: 34px;
+        width: 34px;
         border-radius: 50%;
-        background-color: turquoise;
+        background-color: white;
         font-size: 12px;
         cursor: pointer;
+        margin-top: -5px;
     }
 `;
 
@@ -59,6 +60,9 @@ export default function App() {
     const [last, setLast] = useState("");
     const [initials, setInitials] = useState("");
     const [filteredDestinations, setFilteredDestinations] = useState("");
+    const [selectedDestination, setSelectedDestination] = useState("");
+    const [userLat, setUserLat] = useState("");
+    const [userLong, setUserLong] = useState("");
 
     useEffect(() => {
         (async () => {
@@ -67,6 +71,8 @@ export default function App() {
             setFirst(data.first);
             setLast(data.last);
             setInitials(data.first.charAt(0) + data.last.charAt(0));
+            setUserLat(data.lat);
+            setUserLong(data.long);
         })();
     }, []);
 
@@ -79,17 +85,18 @@ export default function App() {
     const handleClose = () => {
         setAnchorEl(null);
     };
-    function sendDestinationsToApp(filteredDestinations) {
+    function sendDestinationsToApp(filteredDestinations, dest) {
         setFilteredDestinations(filteredDestinations);
+        setSelectedDestination(dest);
         console.log("currentDestinations in App!: ", filteredDestinations);
+        console.log("selectedDestination: ", dest);
     }
     return (
         <React.Fragment>
             <BrowserRouter>
                 <Header>
                     <span>
-                        <img src="/img/logo.png" />
-                        <p>piTou</p>
+                        <img src="/img/logo_marker.png" />
                     </span>
                     <div
                         aria-controls="simple-menu"
@@ -143,6 +150,7 @@ export default function App() {
                     component={({ match }) => (
                         <Details
                             filteredDestinations={filteredDestinations}
+                            selectedDestination={selectedDestination}
                             match={match}
                         />
                     )}

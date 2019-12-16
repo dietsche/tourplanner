@@ -12,6 +12,12 @@ import TrainIcon from "@material-ui/icons/Train";
 import DirectionsWalkIcon from "@material-ui/icons/DirectionsWalk";
 import DirectionsCarIcon from "@material-ui/icons/DirectionsCar";
 import DirectionsBikeIcon from "@material-ui/icons/DirectionsBike";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import ExpansionPanel from "@material-ui/core/ExpansionPanel";
+import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
+import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import ScheduleIcon from "@material-ui/icons/Schedule";
 
 // import { spacing, typography } from "@material-ui/system";
 
@@ -21,13 +27,13 @@ const FilterBar = styled.div`
     justify-content: space-around;
     align-items: center;
     width: 100vw;
-    background-color: rgb(113, 169, 90);
-    /* padding: 0 10px; */
-    box-shadow: 0 1px 3px;
+    padding-bottom: 10px;
+`;
 
-    /* div {
-        margin: 0 20px;
-    } */
+const Shadow = styled.div`
+    height: 1px;
+    width: 100vw;
+    box-shadow: 0 1.5px 3px;
 `;
 
 const WeatherContainer = styled.div`
@@ -35,43 +41,57 @@ const WeatherContainer = styled.div`
     width: 100%;
     justify-content: center;
     align-items: center;
-    margin-top: 5px;
+    margin: 5px 20px;
     div {
         width: 74vw;
+        max-width: 400px;
+        h2 {
+            font-size: calc(14px + .1vw);
+            color: rgb(50, 50, 50);
+            text-align: center;
+        }
+
     }
     .arrow-container {
         width: 13vw;
-    }
-    h2 {
-        font-size: 14px;
-        color: rgb(50, 50, 50);
-        text-align: center;
-    }
+        p {
+            font-family: "Fredoka One", cursive;
+            cursor: pointer;
+            margin: auto 5vw;
+        }
 
-    p {
-        font-family: "Fredoka One", cursive;
-        cursor: pointer;
-        margin: auto 5vw;
-    }
 `;
 
 const DistanceContainer = styled.div`
     display: flex;
     align-items: center;
-    div:nth-of-type(1) {
-    }
-    div:nth-of-type(2) {
-        margin-top: 4px;
-        margin-left: 10px;
+    margin: 5px 20px;
+    .distance-icon {
+        margin: 0 15px 15px 0;
     }
 `;
+
+const NrResults = styled.div`
+    display: flex;
+    justify-content: flex-end;
+    align-content: center;
+    height: 20px;
+    width: 100%;
+    p {
+        font-size: 12px;
+        font-weight: bold;
+        color: black;
+        margin-right: 30px;
+    }
+`;
+
 const ResultsContainer = styled.div`
     display: flex;
     justify-content: center;
     align-content: start;
     margin-top: 10px;
     flex-wrap: wrap;
-    height: calc(100vh - 300px);
+    height: calc(100vh - 320px);
     width: 100%;
 `;
 
@@ -91,6 +111,7 @@ const TransportContainer = styled.div`
         border-radius: 50%;
         z-index: 50;
         cursor: pointer;
+        background-color: rgb(41, 84, 110);
 
         > div {
             position: absolute;
@@ -102,6 +123,12 @@ const TransportContainer = styled.div`
             cursor: pointer;
         }
     }
+`;
+const SpinnerContainer = styled.div`
+    height: 80vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 `;
 
 const marks = [
@@ -129,7 +156,7 @@ const marks = [
 
 const DistanceSlider = withStyles({
     root: {
-        color: "white",
+        color: "rgb(41, 84, 110)",
         height: 8,
         width: 200
     },
@@ -180,6 +207,8 @@ export default function Result({ sendDestinationsToApp }) {
     const [foot, setFoot] = useState(true);
     const [today, setToday] = useState(true);
     const [tomorrow, setTomorrow] = useState(false);
+    const [norain, setNorain] = useState(false);
+    const [rain, setRain] = useState(false);
     const [hot, setHot] = useState(false);
     const [cold, setCold] = useState(false);
 
@@ -281,22 +310,28 @@ export default function Result({ sendDestinationsToApp }) {
             weatherData.precipIntensityToday
         );
         if (weatherData.precipIntensityToday > 0.1) {
+            setRain(true);
             console.log("regentag!");
+        } else {
+            setNorain(true);
         }
         if (weatherData.temperatureHighToday < 10) {
             console.log("kalt");
             setCold(true);
         }
-        // setWeatherDestinations(
-        //     destinations.filter(
-        //         dest =>
-        //             (car && dest.rain && dest.car <= distance) ||
-        //             (bike && dest.bike && dest.bike <= distance) ||
-        //             (train && dest.train && dest.train <= distance) ||
-        //             (foot && dest.foot && dest.foot <= distance)
-        //     )
-        // );
+        if (weatherData.temperatureHighToday > 20) {
+            console.log("kalt");
+            setHot(true);
+        }
+        destinations.map(dest => {
+            console.log("rain && dest.rain", rain && dest.rain);
+            console.log("noreain && dest.rain", norain && dest.norain);
+            console.log("cold && dest.rain", cold && dest.cold);
+            console.log("hot  && dest.rain", hot && dest.hot);
+        });
+    }, [destinations, weatherData, rain, norain]);
 
+    useEffect(() => {
         setFilteredDestinations(
             destinations.filter(
                 dest =>
@@ -304,85 +339,135 @@ export default function Result({ sendDestinationsToApp }) {
                         (bike && dest.bike && dest.bike <= distance) ||
                         (train && dest.train && dest.train <= distance) ||
                         (foot && dest.foot && dest.foot <= distance)) &&
-                    cold == dest.cold
+                    (!rain || (rain && dest.rain)) &&
+                    (!cold || (cold && dest.cold)) &&
+                    (!hot || (hot && dest.hot))
             )
         );
-    }, [
-        distance,
-        destinations,
-        car,
-        train,
-        bike,
-        foot,
-        weatherData,
-        cold,
-        hot
-    ]);
-    function sendDataToApp() {
+    }, [cold, hot, distance, car, train, bike, foot]);
+
+    function sendDataToApp(dest) {
         console.log("SENDING");
-        sendDestinationsToApp(filteredDestinations); //nicht aktueller Stand der hier verschickt wird: (1) immer ein durchlauf hinterher + (2)WEtterdaten fehlen noch!!!
+        sendDestinationsToApp(filteredDestinations, dest); //nicht aktueller Stand der hier verschickt wird: (1) immer ein durchlauf hinterher + (2)WEtterdaten fehlen noch!!!
     }
     console.log("cold === dest.cold: ", cold, destinations);
+    if (weatherData.length == 0) {
+        return (
+            <SpinnerContainer>
+                {" "}
+                <CircularProgress
+                    color="secondary"
+                    style={{
+                        height: "20vw",
+                        maxHeight: "100px",
+                        width: "20vw",
+                        maxWidth: "100px"
+                    }}
+                />
+            </SpinnerContainer>
+        );
+    }
+
     return (
         <React.Fragment>
-            <FilterBar>
-                <WeatherContainer>
-                    <div className="arrow-container">
-                        {tomorrow && <p onClick={changeDay}> &lt;</p>}
-                    </div>
-                    <div>
-                        <h2>
-                            {today ? <span>Today</span> : <span>Tomorrow</span>}{" "}
-                            max. {weatherData.temperatureHigh} °C |{" "}
-                            {weatherData.summary}
-                        </h2>
-                    </div>
-                    <div className="arrow-container">
-                        {today && <p onClick={changeDay}> &gt;</p>}
-                    </div>
-                </WeatherContainer>
-                <DistanceContainer>
-                    <div>
-                        <h2></h2>
-                    </div>
-                    <div>
-                        <DistanceSlider
-                            onChange={(e, val) => {
-                                console.log("val ", val);
-                                setDistance(val);
-                            }}
-                            valueLabelDisplay="off"
-                            aria-label="pretto slider"
-                            defaultValue={30}
-                            marks={marks}
-                            max={60}
-                            step={5}
-                        />
-                    </div>
-                </DistanceContainer>
-                <TransportContainer>
-                    <div onClick={() => changeMode("car")}>
-                        <DirectionsCarIcon onClick={() => changeMode("car")} />
-                        {!car && <div> </div>}
-                    </div>
-                    <div onClick={() => changeMode("train")}>
-                        <TrainIcon onClick={() => changeMode("train")} />{" "}
-                        {!train && <div> </div>}
-                    </div>
-                    <div onClick={() => changeMode("bike")}>
-                        <DirectionsBikeIcon
-                            onClick={() => changeMode("bike")}
-                        />
-                        {!bike && <div> </div>}
-                    </div>
-                    <div onClick={() => changeMode("foot")}>
-                        <DirectionsWalkIcon
-                            onClick={() => changeMode("foot")}
-                        />
-                        {!foot && <div> </div>}
-                    </div>
-                </TransportContainer>
-            </FilterBar>
+            <ExpansionPanel
+                style={{
+                    backgroundColor: "white",
+                    padding: 0,
+                    margin: "0 auto"
+                }}
+            >
+                <ExpansionPanelSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel1a-content"
+                    id="panel1a-header"
+                    style={{
+                        height: 18,
+                        flexGrow: 0,
+                        marginLeft: "calc(100vw - 140px)"
+                    }}
+                >
+                    <p style={{ fontSize: 15 }}>Filter</p>
+                </ExpansionPanelSummary>
+                <ExpansionPanelDetails style={{ padding: 0 }}>
+                    <FilterBar>
+                        <WeatherContainer>
+                            <div className="arrow-container">
+                                {tomorrow && <p onClick={changeDay}> &lt;</p>}
+                            </div>
+                            <div>
+                                <h2>
+                                    {today ? (
+                                        <span>Today</span>
+                                    ) : (
+                                        <span>Tomorrow</span>
+                                    )}{" "}
+                                    max. {weatherData.temperatureHigh} °C |{" "}
+                                    {weatherData.summary}
+                                </h2>
+                            </div>
+                            <div className="arrow-container">
+                                {today && <p onClick={changeDay}> &gt;</p>}
+                            </div>
+                        </WeatherContainer>
+                        <DistanceContainer>
+                            <div className="distance-icon">
+                                <ScheduleIcon />
+                            </div>
+                            <div>
+                                <DistanceSlider
+                                    onChange={(e, val) => {
+                                        console.log("val ", val);
+                                        setDistance(val);
+                                    }}
+                                    valueLabelDisplay="off"
+                                    aria-label="pretto slider"
+                                    defaultValue={30}
+                                    marks={marks}
+                                    max={60}
+                                    step={5}
+                                />
+                            </div>
+                        </DistanceContainer>
+                        <TransportContainer>
+                            <div onClick={() => changeMode("car")}>
+                                <DirectionsCarIcon
+                                    style={{ color: "white" }}
+                                    onClick={() => changeMode("car")}
+                                />
+                                {!car && <div> </div>}
+                            </div>
+                            <div onClick={() => changeMode("train")}>
+                                <TrainIcon
+                                    style={{ color: "white" }}
+                                    onClick={() => changeMode("train")}
+                                />{" "}
+                                {!train && <div> </div>}
+                            </div>
+                            <div onClick={() => changeMode("bike")}>
+                                <DirectionsBikeIcon
+                                    style={{ color: "white" }}
+                                    onClick={() => changeMode("bike")}
+                                />
+                                {!bike && <div> </div>}
+                            </div>
+                            <div onClick={() => changeMode("foot")}>
+                                <DirectionsWalkIcon
+                                    style={{ color: "white" }}
+                                    onClick={() => changeMode("foot")}
+                                />
+                                {!foot && <div> </div>}
+                            </div>
+                        </TransportContainer>
+                    </FilterBar>
+                </ExpansionPanelDetails>
+            </ExpansionPanel>
+            <Shadow> </Shadow>
+
+            <NrResults>
+                {" "}
+                <p>{filteredDestinations.length} results</p>{" "}
+            </NrResults>
             <ResultsContainer>
                 {filteredDestinations &&
                     filteredDestinations.map(dest => (
@@ -391,17 +476,17 @@ export default function Result({ sendDestinationsToApp }) {
                             key={dest.id}
                             style={{ textDecoration: "none", color: "black" }}
                             onClick={() => {
-                                sendDataToApp(dest.id);
+                                sendDataToApp(dest);
                             }}
                         >
                             <ResultCard
                                 key={dest.id}
                                 title={dest.title}
                                 description={dest.description}
-                                car={dest.car}
-                                train={dest.train}
-                                bike={dest.bike}
-                                foot={dest.foot}
+                                car={car && dest.car}
+                                train={train && dest.train}
+                                bike={bike && dest.bike}
+                                foot={foot && dest.foot}
                                 norain={dest.norain}
                                 rain={dest.rain}
                                 hot={dest.hot}

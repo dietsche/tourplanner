@@ -4,7 +4,6 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { Form } from "./welcome";
 import {
-    Button,
     TextField,
     Checkbox,
     FormControlLabel,
@@ -108,6 +107,7 @@ export default class Register extends React.Component {
                             onChange={e => this.handleChange(e)}
                         />
                     </div>
+
                     <div className="row">
                         <input
                             className="street"
@@ -151,13 +151,13 @@ export default class Register extends React.Component {
                         </div>
                     )}
 
-                    <Button
+                    <button
                         variant="outlined"
                         color="primary"
                         onClick={() => this.submit()}
                     >
                         Register
-                    </Button>
+                    </button>
                     <div className="switch">
                         {" "}
                         Already a member? Please <Link to="/login">log in</Link>

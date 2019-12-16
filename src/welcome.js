@@ -36,8 +36,9 @@ export const Form = styled.div`
         border-radius: 3px;
         border: 2px rgb(80, 80, 80) solid;
         background: red;
-        color: rgb(222, 222, 222);
+        color: white;
         font-size: 18px;
+        background-color: rgb(238, 56, 64);
     }
     div {
         color: white;
@@ -64,10 +65,11 @@ const LogoContainer = styled.div`
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: #17053e;
+    background-color: rgb(41, 84, 110);
     img {
         width: 120px;
         margin-bottom: 2vh;
+        margin-top: 20px;
     }
     div {
         width: 80vw;
@@ -80,7 +82,7 @@ const LogoContainer = styled.div`
         }
         p.pitou {
             font-size: 70px;
-            color: red;
+            color: rgb(238, 56, 64);
             margin: -15px auto;
         }
     }
@@ -100,8 +102,8 @@ export default function Welcome() {
 
                 <HashRouter>
                     <div>
-                        <Route exact path="/" component={Registration} />
-                        <Route path="/login" component={Login} />
+                        <Route exact path="/" component={Login} />
+                        <Route path="/registration" component={Registration} />
                     </div>
                 </HashRouter>
             </LogoContainer>

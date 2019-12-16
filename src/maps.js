@@ -154,7 +154,8 @@ export function Map({ onPositionChange }) {
             <GoogleMap
                 defaultOptions={{
                     streetViewControl: false,
-                    mapTypeControl: false
+                    mapTypeControl: false,
+                    fullscreenControl: false
                 }}
                 defaultZoom={12.5}
                 defaultCenter={{ lat: 52.5024756, lng: 13.4850351 }}
@@ -171,8 +172,8 @@ export function Map({ onPositionChange }) {
                         getPosition(event);
                     }}
                     icon={{
-                        url: `/img/logo.png`,
-                        scaledSize: new window.google.maps.Size(25, 25)
+                        url: `/img/logo_marker.png`,
+                        scaledSize: new window.google.maps.Size(25, 30)
                     }}
                     draggable={true}
                 />

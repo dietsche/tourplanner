@@ -8,8 +8,10 @@ import App from "./app";
 const GlobalStyle = createGlobalStyle`
     body {
         margin: 0;
-        font-family: Arial;
-        background-color: white;
+        font-family: 'Open Sans', sans-serif;
+        // background-color: #605d5d;
+        background-color: rgb(242, 242, 242);
+        width: 100vw;
     }
     button, a {
         cursor: pointer;

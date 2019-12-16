@@ -73,5 +73,7 @@ exports.addDestination = function(
 };
 
 exports.getDestinationData = function() {
-    return db.query("SELECT * FROM destinations");
+    return db.query(
+        "SELECT * FROM destinations ORDER BY train DESC NULLS LAST"
+    );
 };

@@ -235,13 +235,45 @@ app.post("/calculate-distance", async (req, res) => {
     } catch (error) {
         console.error(error);
     }
+});
 
-    // let destinationData = await db.getDestinationData();
-    // console.log("destinationData:", destinationData.rows);
-    // res.json({
-    //     destinationData: destinationData.rows,
-    //     success: true
-    // });
+app.post("/geolocate", async (req, res) => {
+    const { latitude, longitude, mode } = req.body;
+    console.log(req.body);
+
+    const BaseLocation = "52.5024756,13.4850351";
+
+    // get locations of targets
+    const TargetLocation = [latitude, longitude];
+    const Mode = mode;
+
+    // prepare final API call
+    let ApiURL = "https://maps.googleapis.com/maps/api/distancematrix/json?";
+    let params = `origins=${BaseLocation}&destinations=${TargetLocation}&mode=${Mode}&key=AIzaSyBRGDY9ghWbWBS-JTTlxf2UdtwR8cPaJus`;
+    let finalApiURL = `${ApiURL}${encodeURI(params)}`;
+
+    console.log("finalApiURL:\n");
+    console.log(finalApiURL);
+
+    // get duration/distance from base to each target
+    try {
+        let response = await fetch(finalApiURL);
+        let responseJson = await response.json();
+        console.log("responseJson:\n");
+        console.log(responseJson.rows);
+        console.log(
+            "responseJson.rows[0]elements: ",
+            responseJson.rows[0].elements[0].duration.value
+        );
+        let newResponse = JSON.stringify(responseJson);
+        res.json({
+            success: true,
+            mode: responseJson.rows[0].elements[0].duration.value
+        });
+        console.log("newResponse: ", newResponse);
+    } catch (error) {
+        console.error(error);
+    }
 });
 
 app.post("/uploadImage", uploader.single("file"), s3.upload, (req, res) => {
