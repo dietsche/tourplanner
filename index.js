@@ -1,3 +1,4 @@
+console.log("SErver");
 const express = require("express");
 const app = express();
 const compression = require("compression");
@@ -72,7 +73,22 @@ app.get("/welcome", function(req, res) {
 
 app.post("/registration", async (req, res) => {
     const { first, last, email, password, street, nr, city, zip } = req.body;
+
+    let ApiURL = "https://maps.googleapis.com/maps/api/geocode/json?";
+    let params = `address=${street}+${nr}+${zip}+${city}&key=AIzaSyBRGDY9ghWbWBS-JTTlxf2UdtwR8cPaJus`;
+    let finalApiURL = `${ApiURL}${encodeURI(params)}`;
+
+    console.log("finalApiURL:\n");
+    console.log(finalApiURL);
+
     try {
+        let response = await fetch(finalApiURL);
+        let responseJson = await response.json();
+        console.log("responseJson:\n");
+        let userLat = responseJson.results[0].geometry.location.lat;
+        let userLong = responseJson.results[0].geometry.location.lng;
+        console.log("USERLAT UND LONG? ", userLat, userLong);
+
         let hashedPassword = await hash(password);
         let result = await db.addUserData(
             first,
@@ -82,7 +98,9 @@ app.post("/registration", async (req, res) => {
             street,
             nr,
             city,
-            zip
+            zip,
+            userLat,
+            userLong
         );
         console.log("results: ", result.rows[0]);
         req.session.userId = result.rows[0].id;
@@ -101,6 +119,7 @@ app.post("/registration", async (req, res) => {
 app.post("/login", async (req, res) => {
     console.log("server: post-login runs");
     try {
+        console.log("server: post-login runs");
         let savedPassword = await db.getHashedPassword(req.body["email"]);
         let userId = savedPassword.rows[0].id;
         let compareResult = await compare(
@@ -127,26 +146,79 @@ app.post("/login", async (req, res) => {
 });
 
 app.post("/add-destination", async (req, res) => {
+    let {
+        title,
+        description,
+        street,
+        nr,
+        zip,
+        city,
+        lat,
+        long,
+        car,
+        train,
+        bike,
+        foot,
+        norain,
+        rain,
+        hot,
+        cold
+    } = req.body;
     console.log("server: add destination runs");
+    let destLat = lat;
+    let destLong = long;
 
     try {
+        if (destLat == null || destLong == null) {
+            let ApiURL = "https://maps.googleapis.com/maps/api/geocode/json?";
+            let params = `address=${street}+${nr}+${zip}+${city}&key=AIzaSyBRGDY9ghWbWBS-JTTlxf2UdtwR8cPaJus`;
+            let finalApiURL = `${ApiURL}${encodeURI(params)}`;
+            console.log("finalApiURL:");
+            console.log(finalApiURL);
+            let response = await fetch(finalApiURL);
+            let responseJson = await response.json();
+            console.log("responseJson:", response);
+            destLat = responseJson.results[0].geometry.location.lat;
+            destLong = responseJson.results[0].geometry.location.lng;
+        }
+        console.log(
+            "data for db: ",
+            title,
+            description,
+            street,
+            nr,
+            city,
+            zip,
+            destLat,
+            destLong,
+            car,
+            train,
+            bike,
+            foot,
+            norain,
+            rain,
+            hot,
+            cold,
+            req.session.userId
+        );
+
         let addDestination = await db.addDestination(
-            req.body["title"],
-            req.body["description"],
-            req.body["street"],
-            req.body["nr"],
-            req.body["city"],
-            req.body["zip"],
-            req.body["lat"],
-            req.body["long"],
-            req.body["car"],
-            req.body["train"],
-            req.body["bike"],
-            req.body["foot"],
-            req.body["norain"],
-            req.body["rain"],
-            req.body["hot"],
-            req.body["cold"],
+            title,
+            description,
+            street,
+            nr,
+            city,
+            zip,
+            destLat,
+            destLong,
+            car,
+            train,
+            bike,
+            foot,
+            norain,
+            rain,
+            hot,
+            cold,
             req.session.userId
         );
         console.log("succes, addDestination: ", addDestination);
@@ -169,12 +241,14 @@ app.get("/api/user", async (req, res) => {
         console.log("userId: ", userId);
         let userData = await db.getUserData(userId);
         console.log("userData:", userData.rows[0]);
-        let { first, last } = userData.rows[0];
+        let { first, last, lat, long } = userData.rows[0];
         console.log("first ", first);
         res.json({
             success: true,
             first: first,
-            last: last
+            last: last,
+            lat: lat,
+            long: long
         });
     } catch (error) {
         res.json({
@@ -185,7 +259,8 @@ app.get("/api/user", async (req, res) => {
 
 app.get("/api/destinations", async (req, res) => {
     try {
-        let destinationData = await db.getDestinationData();
+        let userId = req.session.userId;
+        let destinationData = await db.getDestinationData(userId);
         console.log("destinationData:", destinationData.rows);
         res.json({
             destinationData: destinationData.rows,
@@ -199,100 +274,62 @@ app.get("/api/destinations", async (req, res) => {
 });
 
 app.post("/calculate-distance", async (req, res) => {
-    const { latitude, longitude, mode } = req.body;
-    console.log(req.body);
-
-    const BaseLocation = "52.5024756,13.4850351";
-
-    // get locations of targets
-    const TargetLocation = [latitude, longitude];
-    const Mode = mode;
-
-    // prepare final API call
-    let ApiURL = "https://maps.googleapis.com/maps/api/distancematrix/json?";
-    let params = `origins=${BaseLocation}&destinations=${TargetLocation}&mode=${Mode}&key=AIzaSyBRGDY9ghWbWBS-JTTlxf2UdtwR8cPaJus`;
-    let finalApiURL = `${ApiURL}${encodeURI(params)}`;
-
-    console.log("finalApiURL:\n");
-    console.log(finalApiURL);
-
-    // get duration/distance from base to each target
-    try {
+    let {
+        latitude,
+        longitude,
+        userLat,
+        userLong,
+        street,
+        nr,
+        zip,
+        city
+    } = req.body;
+    console.log("latitude etc im SERVER: ", latitude, longitude);
+    if (
+        isNaN(latitude) ||
+        latitude == null ||
+        isNaN(longitude) ||
+        longitude == null
+    ) {
+        console.log("if schleife läuft: berechnung lat-long der destination");
+        let ApiURL = "https://maps.googleapis.com/maps/api/geocode/json?";
+        let params = `address=${street}+${nr}+${zip}+${city}&key=AIzaSyBRGDY9ghWbWBS-JTTlxf2UdtwR8cPaJus`;
+        let finalApiURL = `${ApiURL}${encodeURI(params)}`;
+        console.log("finalApiURL: ", finalApiURL);
         let response = await fetch(finalApiURL);
         let responseJson = await response.json();
-        console.log("responseJson:\n");
-        console.log(responseJson.rows);
-        console.log(
-            "responseJson.rows[0]elements: ",
-            responseJson.rows[0].elements[0].duration.value
-        );
-        let newResponse = JSON.stringify(responseJson);
-        res.json({
-            success: true,
-            mode: responseJson.rows[0].elements[0].duration.value
-        });
-        console.log("newResponse: ", newResponse);
-    } catch (error) {
-        console.error(error);
+        console.log("responseJson:", response);
+        latitude = responseJson.results[0].geometry.location.lat;
+        longitude = responseJson.results[0].geometry.location.lng;
     }
-});
 
-app.post("/geolocate", async (req, res) => {
-    const { latitude, longitude, mode } = req.body;
-    console.log(req.body);
-
-    const BaseLocation = "52.5024756,13.4850351";
-
-    // get locations of targets
+    const BaseLocation = `${userLat},${userLong}`;
     const TargetLocation = [latitude, longitude];
-    const Mode = mode;
-
-    // prepare final API call
-    let ApiURL = "https://maps.googleapis.com/maps/api/distancematrix/json?";
-    let params = `origins=${BaseLocation}&destinations=${TargetLocation}&mode=${Mode}&key=AIzaSyBRGDY9ghWbWBS-JTTlxf2UdtwR8cPaJus`;
-    let finalApiURL = `${ApiURL}${encodeURI(params)}`;
-
-    console.log("finalApiURL:\n");
-    console.log(finalApiURL);
-
-    // get duration/distance from base to each target
-    try {
-        let response = await fetch(finalApiURL);
-        let responseJson = await response.json();
-        console.log("responseJson:\n");
-        console.log(responseJson.rows);
-        console.log(
-            "responseJson.rows[0]elements: ",
-            responseJson.rows[0].elements[0].duration.value
-        );
-        let newResponse = JSON.stringify(responseJson);
-        res.json({
-            success: true,
-            mode: responseJson.rows[0].elements[0].duration.value
-        });
-        console.log("newResponse: ", newResponse);
-    } catch (error) {
-        console.error(error);
+    const Mode = ["transit", "driving", "bicycling", "walking"];
+    let responseDistance = [];
+    for (let i = 0; i < 4; i++) {
+        try {
+            let ApiURL =
+                "https://maps.googleapis.com/maps/api/distancematrix/json?";
+            let params = `origins=${BaseLocation}&destinations=${TargetLocation}&mode=${Mode[i]}&key=AIzaSyBRGDY9ghWbWBS-JTTlxf2UdtwR8cPaJus`;
+            let finalApiURL = await `${ApiURL}${encodeURI(params)}`;
+            console.log("finalApiURL: ", finalApiURL);
+            let response = await fetch(finalApiURL);
+            let responseJson = await response.json();
+            console.log("responseJson:", responseJson);
+            responseJson.rows[0]
+                ? responseDistance.push(
+                      responseJson.rows[0].elements[0].duration.value
+                  )
+                : responseDistance.push(null);
+        } catch (error) {
+            console.error(error);
+        }
     }
-});
-
-app.post("/uploadImage", uploader.single("file"), s3.upload, (req, res) => {
-    console.log("req.file.filename: ", req.file.filename);
-    // sconst { title } = req.body;
-    const imageUrl = `${s3Url}/${req.file.filename}`;
-    let userId = req.session.userId;
-    console.log(" imageUrl: ", imageUrl);
-    db.addImage(imageUrl, userId)
-        .then(result => {
-            console.log("result: ", result);
-            res.json({
-                success: true,
-                image: result.rows[0].image
-            });
-        })
-        .catch(err => {
-            console.log("error in post: ", err);
-        });
+    res.json({
+        success: true,
+        time: responseDistance
+    });
 });
 
 app.get("/getweather", async (req, res) => {
@@ -317,6 +354,7 @@ app.get("/getweather", async (req, res) => {
 });
 
 app.get("/logout", function(req, res) {
+    console.log("LOGOUT");
     req.session = null;
     res.redirect("/welcome");
 });

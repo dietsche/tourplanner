@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
     withGoogleMap,
     withScriptjs,
@@ -137,16 +137,26 @@ const mapStyles = [
     }
 ];
 
-export function Map({ onPositionChange }) {
-    let lat;
-    let long;
+export function Map({ onPositionChange, userLat, userLong }) {
+    const [markerLat, setMarkerLat] = useState(null);
+    const [markerLong, setMarkerLong] = useState(null);
+    console.log("userLat und Lon gin map: ", userLat, userLong);
 
-    function getPosition(event) {
+    function changeCoordinates(event) {
         console.log("lat", event.latLng.lat());
         console.log("lng", event.latLng.lng());
-        lat = event.latLng.lat();
-        long = event.latLng.lng();
-        onPositionChange(lat, long);
+        setMarkerLat(event.latLng.lat());
+        setMarkerLong(event.latLng.lng());
+    }
+    function setCoordinates(event) {
+        setMarkerLat(event.latLng.lat());
+        setMarkerLong(event.latLng.lng());
+        onPositionChange(markerLat, markerLong);
+    }
+    useEffect(() => {}, [userLat, userLong, markerLat, markerLong]);
+
+    if (isNaN(userLat) || isNaN(userLong)) {
+        return null;
     }
 
     return (
@@ -158,18 +168,30 @@ export function Map({ onPositionChange }) {
                     fullscreenControl: false
                 }}
                 defaultZoom={12.5}
-                defaultCenter={{ lat: 52.5024756, lng: 13.4850351 }}
+                defaultCenter={{
+                    lat: Math.round(userLat * 10000) / 10000,
+                    lng: Math.round(userLong * 10000) / 10000
+                }}
 
                 // defaultOptions={{ styles: mapStyles }}
             >
                 <Marker
                     key={1}
                     position={{
-                        lat: 52.5024756,
-                        lng: 13.4850351
+                        lat: markerLat
+                            ? Math.round(markerLat * 10000) / 10000
+                            : Math.round(userLat * 10000) / 10000,
+                        lng: markerLong
+                            ? Math.round(markerLong * 10000) / 10000
+                            : Math.round(userLong * 10000) / 10000
+                    }}
+                    onDrag={event => {
+                        setTimeout(() => {
+                            changeCoordinates(event);
+                        }, 5);
                     }}
                     onDblClick={event => {
-                        getPosition(event);
+                        setCoordinates(event);
                     }}
                     icon={{
                         url: `/img/logo_marker.png`,
@@ -183,7 +205,7 @@ export function Map({ onPositionChange }) {
 }
 const MapWrapped = withScriptjs(withGoogleMap(Map));
 
-export default function TestMap({ onPositionChange }) {
+export default function TestMap({ onPositionChange, userLat, userLong }) {
     return (
         <React.Fragment>
             <div
@@ -195,6 +217,8 @@ export default function TestMap({ onPositionChange }) {
                 }}
             >
                 <MapWrapped
+                    userLat={userLat}
+                    userLong={userLong}
                     onPositionChange={onPositionChange}
                     googleMapURL={`https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=AIzaSyBRGDY9ghWbWBS-JTTlxf2UdtwR8cPaJus`}
                     loadingElement={<div style={{ height: `100%` }} />}

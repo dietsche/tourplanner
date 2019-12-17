@@ -18,7 +18,6 @@ const TextFieldWrapper = styled.div`
 `;
 export const MyTextField = styled(TextField)({
     margin: "30px 30px 30px 30px",
-
     color: "white",
     height: 48,
     padding: "0 30px"
@@ -75,94 +74,124 @@ export default class Register extends React.Component {
         return (
             <React.Fragment>
                 <Form>
-                    <div className="row">
-                        <input
-                            required
-                            name="first"
-                            type="text"
-                            placeholder="First Name"
-                            onChange={e => this.handleChange(e)}
-                        />
-                        <input
-                            required
-                            name="last"
-                            type="text"
-                            placeholder="Last Name"
-                            onChange={e => this.handleChange(e)}
-                        />
-                    </div>
-                    <div className="row">
-                        <input
-                            required
-                            name="email"
-                            type="email"
-                            placeholder="Email"
-                            onChange={e => this.handleChange(e)}
-                        />
-                        <input
-                            required
-                            name="password"
-                            type="password"
-                            placeholder="Password"
-                            onChange={e => this.handleChange(e)}
-                        />
-                    </div>
-
-                    <div className="row">
-                        <input
-                            className="street"
-                            required
-                            name="street"
-                            type="text"
-                            placeholder="Street"
-                            onChange={e => this.handleChange(e)}
-                        />
-                        <input
-                            className="nr"
-                            required
-                            type="text"
-                            name="nr"
-                            placeholder="No"
-                            onChange={e => this.handleChange(e)}
-                        />
-                    </div>
-                    <div className="row">
-                        <input
-                            className="zip"
-                            required
-                            type="text"
-                            name="zip"
-                            placeholder="Zip Code"
-                            onChange={e => this.handleChange(e)}
-                        />
-                        <input
-                            className="city"
-                            required
-                            name="city"
-                            type="text"
-                            placeholder="City"
-                            onChange={e => this.handleChange(e)}
-                        />
-                    </div>
-
-                    {this.state.error && (
-                        <div className="error">
-                            Something went wrong. Please try again!
-                        </div>
+                    {!this.state.secondPart && (
+                        <React.Fragment>
+                            <div className="row">
+                                <input
+                                    required
+                                    name="first"
+                                    type="text"
+                                    placeholder="First Name"
+                                    onChange={e => this.handleChange(e)}
+                                />
+                                <input
+                                    required
+                                    name="last"
+                                    type="text"
+                                    placeholder="Last Name"
+                                    onChange={e => this.handleChange(e)}
+                                />
+                            </div>
+                            <div className="row">
+                                <input
+                                    required
+                                    name="email"
+                                    type="email"
+                                    placeholder="Email"
+                                    onChange={e => this.handleChange(e)}
+                                />
+                                <input
+                                    required
+                                    name="password"
+                                    type="password"
+                                    placeholder="Password"
+                                    onChange={e => this.handleChange(e)}
+                                />
+                            </div>
+                            <button
+                                variant="outlined"
+                                color="primary"
+                                onClick={() => {
+                                    console.log("click");
+                                    this.setState({
+                                        secondPart: true
+                                    });
+                                }}
+                            >
+                                Register
+                            </button>
+                            <div className="switch">
+                                {" "}
+                                Already a member? Please{" "}
+                                <Link to="/login">log in</Link>!
+                            </div>
+                        </React.Fragment>
                     )}
+                    {this.state.secondPart && (
+                        <React.Fragment>
+                            <div className="row">
+                                <div
+                                    style={{
+                                        width: 200,
+                                        fontSize: 16,
+                                        color: "darkgrey"
+                                    }}
+                                >
+                                    To complete registration, please add your
+                                    address.
+                                </div>
+                            </div>
+                            <div className="row">
+                                <input
+                                    className="street"
+                                    required
+                                    name="street"
+                                    type="text"
+                                    placeholder="Street"
+                                    onChange={e => this.handleChange(e)}
+                                />
+                                <input
+                                    className="nr"
+                                    required
+                                    type="text"
+                                    name="nr"
+                                    placeholder="No"
+                                    onChange={e => this.handleChange(e)}
+                                />
+                            </div>
+                            <div className="row">
+                                <input
+                                    className="zip"
+                                    required
+                                    type="text"
+                                    name="zip"
+                                    placeholder="Zip Code"
+                                    onChange={e => this.handleChange(e)}
+                                />
+                                <input
+                                    className="city"
+                                    required
+                                    name="city"
+                                    type="text"
+                                    placeholder="City"
+                                    onChange={e => this.handleChange(e)}
+                                />
+                            </div>
 
+                            {this.state.error && (
+                                <div className="error">
+                                    Something went wrong. Please try again!
+                                </div>
+                            )}
+                        </React.Fragment>
+                    )}
                     <button
                         variant="outlined"
                         color="primary"
                         onClick={() => this.submit()}
                     >
-                        Register
+                        Submit
                     </button>
-                    <div className="switch">
-                        {" "}
-                        Already a member? Please <Link to="/login">log in</Link>
-                        !
-                    </div>
                 </Form>
             </React.Fragment>
         );

@@ -11,5 +11,7 @@ CREATE TABLE users (
     nr VARCHAR(255) NOT NULL,
     city VARCHAR(255) NOT NULL,
     zip INTEGER NOT NULL,
+    lat NUMERIC,
+    long NUMERIC,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

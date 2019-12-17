@@ -6,8 +6,6 @@ import { Form } from "./start";
 import ResultCard from "./resultcard";
 import Slider from "@material-ui/core/Slider";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
-import AddIcon from "@material-ui/icons/Add";
-import Fab from "@material-ui/core/Fab";
 import TrainIcon from "@material-ui/icons/Train";
 import DirectionsWalkIcon from "@material-ui/icons/DirectionsWalk";
 import DirectionsCarIcon from "@material-ui/icons/DirectionsCar";
@@ -93,6 +91,13 @@ const ResultsContainer = styled.div`
     flex-wrap: wrap;
     height: calc(100vh - 320px);
     width: 100%;
+    .no-results {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
 `;
 
 const TransportContainer = styled.div`
@@ -323,15 +328,21 @@ export default function Result({ sendDestinationsToApp }) {
             console.log("kalt");
             setHot(true);
         }
-        destinations.map(dest => {
-            console.log("rain && dest.rain", rain && dest.rain);
-            console.log("noreain && dest.rain", norain && dest.norain);
-            console.log("cold && dest.rain", cold && dest.cold);
-            console.log("hot  && dest.rain", hot && dest.hot);
-        });
     }, [destinations, weatherData, rain, norain]);
 
     useEffect(() => {
+        console.log("USE EFFECT RUNS");
+        console.log("log destinations in use Effect: ", destinations);
+
+        destinations.map(dest => {
+            console.log(
+                "weather check for destinations: ",
+                (!rain || (rain && dest.rain)) &&
+                    (!cold || (cold && dest.cold)) &&
+                    (!hot || (hot && dest.hot))
+            );
+        });
+
         setFilteredDestinations(
             destinations.filter(
                 dest =>
@@ -344,7 +355,18 @@ export default function Result({ sendDestinationsToApp }) {
                     (!hot || (hot && dest.hot))
             )
         );
-    }, [cold, hot, distance, car, train, bike, foot]);
+    }, [
+        destinations,
+        cold,
+        hot,
+        rain,
+        norain,
+        distance,
+        car,
+        train,
+        bike,
+        foot
+    ]);
 
     function sendDataToApp(dest) {
         console.log("SENDING");
@@ -469,6 +491,15 @@ export default function Result({ sendDestinationsToApp }) {
                 <p>{filteredDestinations.length} results</p>{" "}
             </NrResults>
             <ResultsContainer>
+                {destinations.length == 0 && (
+                    <div className="no-results">
+                        <p>Welcome to PiTou!</p>{" "}
+                        <p>
+                            <a href="/addcard">Add Destinations</a> to your
+                        </p>
+                        collection!
+                    </div>
+                )}
                 {filteredDestinations &&
                     filteredDestinations.map(dest => (
                         <Link

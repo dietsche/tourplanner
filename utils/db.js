@@ -13,11 +13,13 @@ exports.addUserData = function(
     street,
     nr,
     city,
-    zip
+    zip,
+    lat,
+    long
 ) {
     return db.query(
-        "INSERT INTO users (first, last, email, password, street, nr, city, zip) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
-        [first, last, email, password, street, nr, city, zip]
+        "INSERT INTO users (first, last, email, password, street, nr, city, zip, lat, long) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *",
+        [first, last, email, password, street, nr, city, zip, lat, long]
     );
 };
 
@@ -72,8 +74,9 @@ exports.addDestination = function(
     );
 };
 
-exports.getDestinationData = function() {
+exports.getDestinationData = function(userId) {
     return db.query(
-        "SELECT * FROM destinations ORDER BY train DESC NULLS LAST"
+        `SELECT * FROM destinations WHERE user_id = $1 ORDER BY train DESC NULLS LAST`,
+        [userId]
     );
 };

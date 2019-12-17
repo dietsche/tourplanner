@@ -65,7 +65,7 @@ export function Map({
                     mapTypeControl: false,
                     fullscreenControl: false
                 }}
-                defaultZoom={11}
+                defaultZoom={13}
                 defaultCenter={{ lat: latCurrent, lng: longCurrent }}
                 filteredDestinations={filteredDestinations}
                 id={id}

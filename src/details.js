@@ -83,6 +83,7 @@ export function Details({ filteredDestinations, selectedDestination, match }) {
                 <Link to={{ pathname: "/" }}>
                     <span className="exit">&times;</span>
                 </Link>
+
                 <div className="details-text">
                     <div className="distance-container">
                         {currentDestination.train && (

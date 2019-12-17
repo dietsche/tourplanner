@@ -30,7 +30,7 @@ export const Form = styled.div`
         width: 110px;
     }
     button {
-        margin: 10px auto;
+        margin: 15px auto;
         width: 100px;
         height: 35px;
         border-radius: 3px;
@@ -92,7 +92,7 @@ export default function Welcome() {
     return (
         <React.Fragment>
             <LogoContainer>
-                <img src="/img/logo.png" />
+                <img src="/img/logo2.png" />
                 <div>
                     <p className="pitou">piTou</p>
                 </div>

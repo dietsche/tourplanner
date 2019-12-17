@@ -9,9 +9,9 @@ import DirectionsBikeIcon from "@material-ui/icons/DirectionsBike";
 const Card = styled.div`
     box-sizing: border-box;
     width: 45vw;
-    min-width: 170px;
+    min-width: 175px;
     height: 42vw;
-    min-height: 160px;
+    min-height: 165px;
     @media (max-width: 350px) {
         width: 90vw;
         height: 50vw;
@@ -30,7 +30,7 @@ const Card = styled.div`
     align-items: center;
     overflow: hidden;
     .type-bar {
-        height: 12px;
+        min-height: 12px;
         width: 100%;
         background-color: rgb(41, 84, 110);
     }
@@ -38,21 +38,27 @@ const Card = styled.div`
     .title {
         font-size: calc(12px + 0.35vw);
         @media (min-width: 800px) {
-            font-size: 16px;
+            font-size: 15px;
+        }
+        @media (min-width: 350px) and (max-width: 440px) {
+            font-size: calc(11px + 0.35vw);
         }
         color: rgb(244, 244, 244);
         background-color: rgb(238, 56, 64);
         padding: 2px 5px;
         font-weight: bold;
         text-align: center;
-        margin: calc(3px + 0.5vw) 12px 0 12px;
+        margin: calc(3px + 1.5vw) 12px 0 12px;
     }
     .description {
-        font-size: calc(10px + 0.3vw);
+        font-size: calc(10.5px + 0.4vw);
         color: #17053e;
         text-align: center;
-        margin: 2px 12px;
+        margin: calc(1px + 0.5vw) 12px;
         text-align: center;
+        @media (min-width: 800px) {
+            font-size: 13px;
+        }
     }
     .distance-container {
         width: 100%;

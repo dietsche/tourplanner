@@ -61,13 +61,13 @@ export default function App() {
     const [initials, setInitials] = useState("");
     const [filteredDestinations, setFilteredDestinations] = useState("");
     const [selectedDestination, setSelectedDestination] = useState("");
-    const [userLat, setUserLat] = useState("");
-    const [userLong, setUserLong] = useState("");
+    const [userLat, setUserLat] = useState(null);
+    const [userLong, setUserLong] = useState(null);
 
     useEffect(() => {
         (async () => {
             const { data } = await axios.get(`/api/user/`);
-            console.log(data);
+            console.log("userDATA: ", data);
             setFirst(data.first);
             setLast(data.last);
             setInitials(data.first.charAt(0) + data.last.charAt(0));
@@ -129,7 +129,13 @@ export default function App() {
                         </MenuContent>
                     </Menu>
                 </Header>
-                <Route exact path="/addcard" render={() => <AddCard />} />
+                <Route
+                    exact
+                    path="/addcard"
+                    render={() => (
+                        <AddCard userLat={userLat} userLong={userLong} />
+                    )}
+                />
                 <Route
                     exact
                     path="/registration"

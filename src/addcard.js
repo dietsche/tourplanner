@@ -60,6 +60,9 @@ const AddCardContainer = styled.div`
         height: 22px;
         font-size: 14px;
     }
+    .title {
+        width: 50%;
+    }
 
     .description {
         width: 90%;
@@ -85,26 +88,40 @@ const AddCardContainer = styled.div`
         width: 17px;
         margin-right: 7px;
     }
-    > button {
-        margin: auto;
+    button {
+        margin: 20px auto;
     }
     .on-click {
         cursor: pointer;
         color: rgb(238, 56, 64);
         text-decoration: underline;
     }
-    .coordinates-saved {
+    .map-text {
+        margin-top: 0;
+    }
+    .saved {
         color: green;
+    }
+    .instructions {
+        color: rgb(238, 56, 64);
+    }
+    .error {
+        font-size: 14px;
+        width: 100%;
+        color: red;
+        text-align: center;
+        margin-bottom: -10px;
     }
 `;
 
 const CheckboxWrapper = styled.div`
     display: flex;
     align-items: center;
-    margin: auto 10px;
+    margin: auto 1.2vw;
 `;
 
 const ContainerWeather = styled.div`
+    width: 100%;
     display: flex;
     flex-wrap: wrap;
     .weatherIcon {
@@ -112,7 +129,7 @@ const ContainerWeather = styled.div`
     }
 `;
 
-export default function AddCard() {
+export default function AddCard({ userLat, userLong }) {
     const [state, setState] = useState({
         norain: true,
         rain: true,
@@ -121,11 +138,11 @@ export default function AddCard() {
     });
     const [mapView, setMapView] = useState(false);
     const [locationSuccess, setLocationSuccess] = useState(false);
-    let currentInput = {};
+    const [error, setError] = useState(false);
 
     function changeWeather(str) {
+        console.log(event.target.checked);
         setState({ ...state, [str]: event.target.checked });
-
         // if (str == "norain") {
         //     norain ? setNorain(false) : setNorain(true);
         // } else if (str == "rain") {
@@ -138,11 +155,11 @@ export default function AddCard() {
 
     function handleChange(inputElement) {
         inputElement.preventDefault();
+        console.log("inputElement.target.value: ", inputElement.target.value);
         setState({
             ...state,
             [inputElement.target.name]: inputElement.target.value
         });
-
         // currentInput = {
         //     ...currentInput,
         //     [inputElement.target.name]: inputElement.target.value
@@ -150,9 +167,8 @@ export default function AddCard() {
         // console.log("input obj: ", inputs, inputs.title, inputs.description);
     }
     function submit() {
-        console.log("input.title: ", currentInput.title);
         console.log("state ", state);
-        const {
+        let {
             title,
             description,
             street,
@@ -170,8 +186,38 @@ export default function AddCard() {
             hot,
             cold
         } = state;
-        console.log("klapp refacturing:?= ", title, description);
-
+        console.log("hallo");
+        // if (car === "" || isNaN(car)) {
+        //     affacar = null;
+        // }
+        // if (train === "" || isNaN(train)) {
+        //     train = null;
+        // }
+        // if (bike === "" || isNaN(bike)) {
+        //     bike = null;
+        // }
+        // if (foot === "" || isNaN(foot)) {
+        //     foot = null;
+        // }
+        //
+        console.log(
+            title,
+            description,
+            street,
+            nr,
+            zip,
+            city,
+            lat,
+            long,
+            car,
+            train,
+            bike,
+            foot,
+            norain,
+            rain,
+            hot,
+            cold
+        );
         axios
             .post("/add-destination", {
                 title: title,
@@ -196,9 +242,7 @@ export default function AddCard() {
                     console.log("data", data);
                     location.replace("/"); //replace> page in history is replaced in history > you cant go back in browser!!!!
                 } else {
-                    setState({
-                        error: true
-                    });
+                    setError(true);
                 }
             });
     }
@@ -207,36 +251,66 @@ export default function AddCard() {
         setMapView(true);
     }
 
-    async function changeDistanceMode(mode) {
-        console.log("lat ling in function???: ", state.lat, state.long);
-        let response = await axios.post("/calculate-distance", {
-            latitude: state.lat,
-            longitude: state.long,
-            mode: mode
-        });
-        console.log("time in min : ", Math.round(response.data.bike / 60));
-        let min = Math.round(response.data.mode / 60);
-        mode == "bicycling" &&
+    async function calculateDistance() {
+        try {
+            console.log("lat ling in function???: ", state.lat, state.long);
+            let response = await axios.post("/calculate-distance", {
+                latitude: state.lat,
+                longitude: state.long,
+                userLat: userLat,
+                userLong: userLong,
+                street: state.street,
+                nr: state.nr,
+                zip: state.zip,
+                city: state.city
+            });
+            console.log("RESPONSE: ", response.data.time);
+            let car = Math.round(response.data.time[0] / 60);
+            let train = Math.round(response.data.time[1] / 60);
+            let bike = Math.round(response.data.time[2] / 60);
+            let foot = Math.round(response.data.time[3] / 60);
+            if (isNaN(response.data.time[0])) {
+                car = null;
+            }
+            if (isNaN(response.data.time[1])) {
+                train = null;
+            }
+            if (isNaN(response.data.time[2]) || bike > 120) {
+                bike = null;
+            }
+            if (isNaN(response.data.time[3]) || foot > 60) {
+                foot = null;
+            }
             setState({
                 ...state,
-                bike: min
+                car: car,
+                train: train,
+                bike: bike,
+                foot: foot
             });
-        mode == "walking" &&
-            setState({
-                ...state,
-                foot: min
-            });
-        mode == "driving" &&
-            setState({
-                ...state,
-                car: min
-            });
-        mode == "transit" &&
-            setState({
-                ...state,
-                train: min
-            });
-        console.log(response);
+
+            // if (!isNaN(response.data.time[0]) && response.data.time[0] > 0) {
+            // setState({
+            //     ...state
+            // });
+            // }
+            // if (!isNaN(response.data.time[1]) && response.data.time[1] > 0) {
+            // setState({
+            //     ...state
+            // });
+            // }
+            // if (
+            //     !isNaN(response.data.time[2]) &&
+            //     response.data.time[2] > 0 &&
+            //     response.data.time[2] / 60 < 180
+            // ) {
+            //     setState({
+            //         ...state
+            //     });
+            // }
+        } catch (err) {
+            console.log(err);
+        }
     }
 
     function onPositionChange(lat, long) {
@@ -252,7 +326,8 @@ export default function AddCard() {
 
     useEffect(() => {
         console.log("componentDidMount!");
-    }, []);
+        console.log("userLATLONG???", userLat, userLong);
+    }, [userLat, userLong]);
 
     return (
         <BackgroundLayer>
@@ -260,7 +335,6 @@ export default function AddCard() {
                 <Link to={{ pathname: "/" }}>
                     <span className="exit">&times;</span>
                 </Link>
-
                 <h1>Add Destination</h1>
                 <input
                     required
@@ -268,6 +342,7 @@ export default function AddCard() {
                     className="title"
                     placeholder="Title"
                     name="title"
+                    maxLength="30"
                     onChange={e => handleChange(e)}
                 />
                 <input
@@ -278,14 +353,12 @@ export default function AddCard() {
                     name="description"
                     onChange={e => handleChange(e)}
                 />
-                {!locationSuccess && (
-                    <h2>
-                        Enter Address or{" "}
-                        <span className="on-click" onClick={changeMapView}>
-                            locate on map
-                        </span>
-                    </h2>
-                )}
+                <h2>
+                    Enter Address or{" "}
+                    <span className="on-click" onClick={changeMapView}>
+                        locate on map
+                    </span>
+                </h2>
                 {!mapView && !locationSuccess && (
                     <div>
                         {" "}
@@ -315,20 +388,29 @@ export default function AddCard() {
                         />{" "}
                     </div>
                 )}
-                {mapView && (
-                    <div>
-                        <TestMap onPositionChange={onPositionChange}></TestMap>
-                    </div>
-                )}
-
-                {locationSuccess && (
-                    <h2 className="coordinates-saved">
+                {mapView && locationSuccess && (
+                    <h2 className="saved map-text"> Coordinates are saved!</h2>
+                )}{" "}
+                {mapView && !locationSuccess && (
+                    <h2 className="instructions map-text">
                         {" "}
-                        Coordinates are saved!
+                        Drag marker to position and doubleclick.
                     </h2>
                 )}
-
-                <h2>Distance: enter or calculate (by clicking on icons)</h2>
+                {mapView && (
+                    <div>
+                        <TestMap
+                            userLat={userLat}
+                            userLong={userLong}
+                            onPositionChange={onPositionChange}
+                        ></TestMap>
+                    </div>
+                )}
+                <h2>
+                    <span className="on-click" onClick={calculateDistance}>
+                        Calculate Distance
+                    </span>{" "}
+                </h2>
                 <CheckboxWrapper>
                     <Input
                         id="outlined"
@@ -338,9 +420,6 @@ export default function AddCard() {
                             <InputAdornment position="start">
                                 <DirectionsCarIcon
                                     style={{ cursor: "pointer" }}
-                                    onClick={() =>
-                                        changeDistanceMode("driving")
-                                    }
                                 />
                             </InputAdornment>
                         }
@@ -358,12 +437,7 @@ export default function AddCard() {
                         value={state.train}
                         startAdornment={
                             <InputAdornment position="start">
-                                <TrainIcon
-                                    style={{ cursor: "pointer" }}
-                                    onClick={() =>
-                                        changeDistanceMode("transit")
-                                    }
-                                />
+                                <TrainIcon style={{ cursor: "pointer" }} />
                             </InputAdornment>
                         }
                         endAdornment={
@@ -382,9 +456,6 @@ export default function AddCard() {
                             <InputAdornment position="start">
                                 <DirectionsBikeIcon
                                     style={{ cursor: "pointer" }}
-                                    onClick={() =>
-                                        changeDistanceMode("bicycling")
-                                    }
                                 />
                             </InputAdornment>
                         }
@@ -404,9 +475,6 @@ export default function AddCard() {
                             <InputAdornment position="start">
                                 <DirectionsWalkIcon
                                     style={{ cursor: "pointer" }}
-                                    onClick={() =>
-                                        changeDistanceMode("walking")
-                                    }
                                 />
                             </InputAdornment>
                         }
@@ -425,7 +493,11 @@ export default function AddCard() {
                             color="default"
                             onClick={() => changeWeather("norain")}
                         />
-                        <img src="/img/sun.png" className="weatherIcon" />
+                        <img
+                            src="/img/sun.png"
+                            style={{ width: 33 }}
+                            className="weatherIcon"
+                        />
                     </CheckboxWrapper>
                     <CheckboxWrapper>
                         <Checkbox
@@ -434,7 +506,11 @@ export default function AddCard() {
                             onClick={() => changeWeather("rain")}
                         />
 
-                        <img src="/img/rain.png" className="weatherIcon" />
+                        <img
+                            src="/img/rain.png"
+                            style={{ width: 27 }}
+                            className="weatherIcon"
+                        />
                     </CheckboxWrapper>
                     <CheckboxWrapper>
                         <Checkbox
@@ -444,7 +520,11 @@ export default function AddCard() {
                             // onChange={handleChange("gilad")}
                         />
 
-                        <img src="/img/hot.png" className="weatherIcon" />
+                        <img
+                            src="/img/hot.png"
+                            style={{ width: 27 }}
+                            className="weatherIcon"
+                        />
                     </CheckboxWrapper>
                     <CheckboxWrapper>
                         <Checkbox
@@ -453,10 +533,18 @@ export default function AddCard() {
                             onClick={() => changeWeather("cold")}
                         />
 
-                        <img src="/img/cold.png" className="weatherIcon" />
+                        <img
+                            src="/img/cold.png"
+                            style={{ width: 27 }}
+                            className="weatherIcon"
+                        />
                     </CheckboxWrapper>
                 </ContainerWeather>
-                <h2></h2>
+                {error && (
+                    <div className="error">
+                        <p>Something went wrong. Please try again!</p>
+                    </div>
+                )}
                 <Button
                     variant="outlined"
                     style={{
