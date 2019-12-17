@@ -335,7 +335,7 @@ export default function AddCard({ userLat, userLong }) {
                 <Link to={{ pathname: "/" }}>
                     <span className="exit">&times;</span>
                 </Link>
-                <h1>Add Destination</h1>
+                <h1>Add destination</h1>
                 <input
                     required
                     type="text"
@@ -354,7 +354,7 @@ export default function AddCard({ userLat, userLong }) {
                     onChange={e => handleChange(e)}
                 />
                 <h2>
-                    Enter Address or{" "}
+                    Enter address or{" "}
                     <span className="on-click" onClick={changeMapView}>
                         locate on map
                     </span>
@@ -389,7 +389,7 @@ export default function AddCard({ userLat, userLong }) {
                     </div>
                 )}
                 {mapView && locationSuccess && (
-                    <h2 className="saved map-text"> Coordinates are saved!</h2>
+                    <h2 className="saved map-text"> Coordinates saved!</h2>
                 )}{" "}
                 {mapView && !locationSuccess && (
                     <h2 className="instructions map-text">

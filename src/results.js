@@ -43,7 +43,7 @@ const WeatherContainer = styled.div`
     div {
         width: 74vw;
         max-width: 400px;
-        h2 {
+        p {
             font-size: calc(14px + .1vw);
             color: rgb(50, 50, 50);
             text-align: center;
@@ -418,7 +418,7 @@ export default function Result({ sendDestinationsToApp }) {
                                 {tomorrow && <p onClick={changeDay}> &lt;</p>}
                             </div>
                             <div>
-                                <h2>
+                                <p>
                                     {today ? (
                                         <span>Today</span>
                                     ) : (
@@ -426,7 +426,7 @@ export default function Result({ sendDestinationsToApp }) {
                                     )}{" "}
                                     max. {weatherData.temperatureHigh} °C |{" "}
                                     {weatherData.summary}
-                                </h2>
+                                </p>
                             </div>
                             <div className="arrow-container">
                                 {today && <p onClick={changeDay}> &gt;</p>}

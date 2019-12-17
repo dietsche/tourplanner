@@ -183,15 +183,16 @@ export default class Register extends React.Component {
                                     Something went wrong. Please try again!
                                 </div>
                             )}
+
+                            <button
+                                variant="outlined"
+                                color="primary"
+                                onClick={() => this.submit()}
+                            >
+                                Submit
+                            </button>
                         </React.Fragment>
                     )}
-                    <button
-                        variant="outlined"
-                        color="primary"
-                        onClick={() => this.submit()}
-                    >
-                        Submit
-                    </button>
                 </Form>
             </React.Fragment>
         );

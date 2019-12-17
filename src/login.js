@@ -61,8 +61,8 @@ export default class Login extends React.Component {
                     <button onClick={() => this.submit()}>Login</button>
                     <div>
                         {" "}
-                        Not a member? Please{" "}
-                        <Link to="/registration">register!</Link>{" "}
+                        Not a member?{" "}
+                        <Link to="/registration">Register here!</Link>{" "}
                     </div>
                 </Form>
             </React.Fragment>

@@ -97,7 +97,8 @@ export default function Welcome() {
                     <p className="pitou">piTou</p>
                 </div>
                 <div>
-                    <p> Pick your Tour! [noch ein Satz der App erläutert...]</p>
+                    <p>Pick your Tour!</p>
+                    <p>Choose from your favourite leisure spots.</p>
                 </div>
 
                 <HashRouter>
