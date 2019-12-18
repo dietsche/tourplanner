@@ -16,6 +16,7 @@ import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ScheduleIcon from "@material-ui/icons/Schedule";
+var moment = require("moment");
 
 // import { spacing, typography } from "@material-ui/system";
 
@@ -200,22 +201,29 @@ const DistanceSlider = withStyles({
     }
 })(Slider);
 
-export default function Result({ sendDestinationsToApp }) {
+export default function Result({
+    sendDestinationsToApp,
+    previousDay,
+    alreadyFiltered,
+    previousDistance,
+    previousTrain,
+    previousCar,
+    previousBike,
+    previousFoot
+}) {
     const [destinations, setDestinations] = useState([]);
-    const [weatherDestinations, setWeatherDestinations] = useState([]);
     const [filteredDestinations, setFilteredDestinations] = useState([]);
-    const [weatherData, setWeatherData] = useState([]);
+    const [weatherData, setWeatherData] = useState({ data: [] });
     const [distance, setDistance] = useState(30);
     const [train, setTrain] = useState(true);
     const [car, setCar] = useState(true);
     const [bike, setBike] = useState(true);
     const [foot, setFoot] = useState(true);
-    const [today, setToday] = useState(true);
-    const [tomorrow, setTomorrow] = useState(false);
     const [norain, setNorain] = useState(false);
     const [rain, setRain] = useState(false);
     const [hot, setHot] = useState(false);
     const [cold, setCold] = useState(false);
+    const [day, setDay] = useState(0);
 
     useEffect(() => {
         console.log("componentDidMount!");
@@ -223,76 +231,57 @@ export default function Result({ sendDestinationsToApp }) {
         (async () => {
             const { data } = await axios.get("/getweather");
             console.log("data.weatherData: ", data.weatherData);
-            const temperatureHighToday = Math.round(
-                data.weatherData.daily.data[0].temperatureHigh
-            );
-            const summaryToday = data.weatherData.daily.data[0].summary;
-            const temperatureHighTomorrow = Math.round(
-                data.weatherData.daily.data[1].temperatureHigh
-            );
-            const summaryTomorrow = data.weatherData.daily.data[1].summary;
-            const precipIntensityToday =
-                data.weatherData.daily.data[0].precipIntensity;
-            const precipIntensityTomorrow =
-                data.weatherData.daily.data[1].precipIntensity;
 
-            console.log(
-                "RAIN DATA`????: ",
-                data.weatherData.daily.data[0].precipIntensity,
-                data.weatherData.daily.data[2].precipIntensity,
-                data.weatherData.daily.data[3].precipIntensity,
-                data.weatherData.daily.data[5].precipIntensity
-            );
-
+            const weatherObject = {};
+            for (let i = 0; i < 5; i++) {
+                weatherObject[i] = {
+                    temperatureHigh: Math.round(
+                        data.weatherData.daily.data[i].temperatureHigh
+                    ),
+                    precipIntensity:
+                        data.weatherData.daily.data[i].precipIntensity,
+                    summary: data.weatherData.daily.data[i].summary
+                };
+            }
+            console.log("WEATHEROBJECT: ", weatherObject);
             setWeatherData({
-                temperatureHigh: temperatureHighToday,
-                precipIntensity: precipIntensityToday,
-                summary: summaryToday,
-                temperatureHighToday: temperatureHighToday,
-                summaryToday: summaryToday,
-                precipIntensityToday: precipIntensityToday,
-                temperatureHighTomorrow: temperatureHighTomorrow,
-                summaryTomorrow: summaryTomorrow,
-                precipIntensityTomorrow: precipIntensityTomorrow
+                data: weatherObject
             });
         })();
     }, []);
 
     useEffect(() => {
         console.log("componentDidMount!");
+        console.log(
+            "FilteredDestinations when comp mountS: ",
+            filteredDestinations
+        );
+        console.log("alreadyFiltered: ", alreadyFiltered);
 
         (async () => {
             const { data } = await axios.get("/api/destinations");
             console.log("data destinations: ", data);
             console.log("dest ROWS: ", data.destinationData);
+            data.destinationData.sort(a => (a.favourite ? -1 : 1));
             setDestinations(data.destinationData);
         })();
-    }, []);
+        if (alreadyFiltered) {
+            setDistance(previousDistance);
+            setDay(previousDay);
+            setCar(previousCar);
+            setTrain(previousTrain);
+            setBike(previousBike);
+            setFoot(previousFoot);
+        }
+    }, [alreadyFiltered]);
 
-    function changeDay() {
-        if (today) {
-            setWeatherData({
-                temperatureHigh: weatherData.temperatureHighTomorrow,
-                summary: weatherData.summaryTomorrow,
-                temperatureHighToday: weatherData.temperatureHighToday,
-                summaryToday: weatherData.summaryToday,
-                temperatureHighTomorrow: weatherData.temperatureHighTomorrow,
-                summaryTomorrow: weatherData.summaryTomorrow
-            });
-            setToday(false);
-            setTomorrow(true);
-        } else if (tomorrow) {
-            setWeatherData({
-                temperatureHigh: weatherData.temperatureHighToday,
-                summary: weatherData.summaryToday,
-                temperatureHighToday: weatherData.temperatureHighToday,
-                summaryToday: weatherData.summaryToday,
-                temperatureHighTomorrow: weatherData.temperatureHighTomorrow,
-                summaryTomorrow: weatherData.summaryTomorrow
-            });
-            setToday(true);
-            setTomorrow(false);
-            return;
+    function changeDay(plusMinus) {
+        let nextDay = day + 1;
+        let previousDay = day - 1;
+        if (plusMinus == "plus") {
+            setDay(nextDay);
+        } else {
+            setDay(previousDay);
         }
     }
 
@@ -309,26 +298,37 @@ export default function Result({ sendDestinationsToApp }) {
     }
 
     useEffect(() => {
-        console.log("state of car...: ", car, train);
-        console.log(
-            "weatherData.precipIntensityToday: ",
-            weatherData.precipIntensityToday
-        );
-        if (weatherData.precipIntensityToday > 0.1) {
-            setRain(true);
-            console.log("regentag!");
-        } else {
-            setNorain(true);
+        console.log("WEATHER DATA ", weatherData);
+        console.log("WEATHER DATA.data ", weatherData.data);
+        console.log("WEATHER DATA.length ", weatherData.data[4]);
+        if (weatherData.data[4]) {
+            console.log(
+                "weatherData.data[0].precipIntensity: ",
+                weatherData.data[day].precipIntensity,
+                day
+            );
+            if (weatherData.data[day].precipIntensity > 0.03) {
+                setRain(true);
+                console.log("regentag!");
+            } else {
+                setRain(false);
+            }
+            if (weatherData.data[day].temperatureHigh < 10) {
+                console.log(
+                    "kaltkaltkaltkaltkaltkaltkaltkaltkaltkaltkaltkaltkaltkaltkaltkalt"
+                );
+                setCold(true);
+            } else {
+                setCold(false);
+            }
+            if (weatherData.data[day].temperatureHigh > 20) {
+                console.log("kalt");
+                setHot(true);
+            } else {
+                setHot(false);
+            }
         }
-        if (weatherData.temperatureHighToday < 10) {
-            console.log("kalt");
-            setCold(true);
-        }
-        if (weatherData.temperatureHighToday > 20) {
-            console.log("kalt");
-            setHot(true);
-        }
-    }, [destinations, weatherData, rain, norain]);
+    }, [weatherData.data, day, hot, cold, rain, norain]);
 
     useEffect(() => {
         console.log("USE EFFECT RUNS");
@@ -354,6 +354,12 @@ export default function Result({ sendDestinationsToApp }) {
                     (!cold || (cold && dest.cold)) &&
                     (!hot || (hot && dest.hot))
             )
+            // .sort((a, b) =>
+            //     Math.min[(a.car, a.train, a.bike, a.foot)] >
+            //     Math.min[(b.car, b.train, b.bike, b.foot)]
+            //         ? 1
+            //         : -1
+            // )
         );
     }, [
         destinations,
@@ -370,10 +376,19 @@ export default function Result({ sendDestinationsToApp }) {
 
     function sendDataToApp(dest) {
         console.log("SENDING");
-        sendDestinationsToApp(filteredDestinations, dest); //nicht aktueller Stand der hier verschickt wird: (1) immer ein durchlauf hinterher + (2)WEtterdaten fehlen noch!!!
+        sendDestinationsToApp(
+            filteredDestinations,
+            distance,
+            day,
+            train,
+            car,
+            bike,
+            foot,
+            dest
+        ); //nicht aktueller Stand der hier verschickt wird: (1) immer ein durchlauf hinterher + (2)WEtterdaten fehlen noch!!!
     }
     console.log("cold === dest.cold: ", cold, destinations);
-    if (weatherData.length == 0) {
+    if (!weatherData.data[4]) {
         return (
             <SpinnerContainer>
                 {" "}
@@ -415,21 +430,50 @@ export default function Result({ sendDestinationsToApp }) {
                     <FilterBar>
                         <WeatherContainer>
                             <div className="arrow-container">
-                                {tomorrow && <p onClick={changeDay}> &lt;</p>}
+                                {day > 0 && (
+                                    <p
+                                        onClick={() => {
+                                            changeDay("minus");
+                                        }}
+                                    >
+                                        {" "}
+                                        &lt;
+                                    </p>
+                                )}
                             </div>
                             <div>
                                 <p>
-                                    {today ? (
-                                        <span>Today</span>
-                                    ) : (
-                                        <span>Tomorrow</span>
-                                    )}{" "}
-                                    max. {weatherData.temperatureHigh} °C |{" "}
-                                    {weatherData.summary}
+                                    <span>
+                                        {day > 0
+                                            ? day > 1
+                                                ? moment()
+                                                      .add(day, "days")
+                                                      .format("dddd")
+                                                : "Tomorrow"
+                                            : "Today"}{" "}
+                                    </span>{" "}
+                                    max.{" "}
+                                    {weatherData.data &&
+                                        weatherData.data[day] &&
+                                        weatherData.data[day]
+                                            .temperatureHigh}{" "}
+                                    °C |{" "}
+                                    {weatherData.data &&
+                                        weatherData.data[day] &&
+                                        weatherData.data[day].summary}
                                 </p>
                             </div>
                             <div className="arrow-container">
-                                {today && <p onClick={changeDay}> &gt;</p>}
+                                {day < 4 && (
+                                    <p
+                                        onClick={() => {
+                                            changeDay("plus");
+                                        }}
+                                    >
+                                        {" "}
+                                        &gt;
+                                    </p>
+                                )}
                             </div>
                         </WeatherContainer>
                         <DistanceContainer>
@@ -444,7 +488,7 @@ export default function Result({ sendDestinationsToApp }) {
                                     }}
                                     valueLabelDisplay="off"
                                     aria-label="pretto slider"
-                                    defaultValue={30}
+                                    defaultValue={previousDistance || 30}
                                     marks={marks}
                                     max={60}
                                     step={5}
@@ -511,6 +555,7 @@ export default function Result({ sendDestinationsToApp }) {
                             }}
                         >
                             <ResultCard
+                                distance={distance}
                                 key={dest.id}
                                 title={dest.title}
                                 description={dest.description}

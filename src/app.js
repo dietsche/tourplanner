@@ -63,6 +63,13 @@ export default function App() {
     const [selectedDestination, setSelectedDestination] = useState("");
     const [userLat, setUserLat] = useState(null);
     const [userLong, setUserLong] = useState(null);
+    const [alreadyFiltered, setAlreadyFiltered] = useState(false);
+    const [previousDistance, setPreviousDistance] = useState(null);
+    const [previousDay, setPreviousDay] = useState(null);
+    const [previousTrain, setPreviousTrain] = useState(true);
+    const [previousCar, setPreviousCar] = useState(true);
+    const [previousBike, setPreviousBike] = useState(true);
+    const [previousFoot, setPreviousFoot] = useState(true);
 
     useEffect(() => {
         (async () => {
@@ -85,12 +92,29 @@ export default function App() {
     const handleClose = () => {
         setAnchorEl(null);
     };
-    function sendDestinationsToApp(filteredDestinations, dest) {
+    function sendDestinationsToApp(
+        filteredDestinations,
+        distance,
+        day,
+        train,
+        car,
+        bike,
+        foot,
+        dest
+    ) {
         setFilteredDestinations(filteredDestinations);
+        setPreviousDay(day);
+        setPreviousDistance(distance);
+        setPreviousTrain(train);
+        setPreviousCar(car);
+        setPreviousBike(bike);
+        setPreviousFoot(foot);
         setSelectedDestination(dest);
+        setAlreadyFiltered(true);
         console.log("currentDestinations in App!: ", filteredDestinations);
         console.log("selectedDestination: ", dest);
     }
+
     async function changeStarState(id, starState) {
         console.log("star change on app-level; id: ", id, starState);
         let changedFavourites = await axios.post(`/update-favourites`, {
@@ -157,6 +181,13 @@ export default function App() {
                     render={() => (
                         <Results
                             sendDestinationsToApp={sendDestinationsToApp}
+                            previousDistance={previousDistance}
+                            previousTrain={previousTrain}
+                            previousCar={previousCar}
+                            previousBike={previousBike}
+                            previousFoot={previousFoot}
+                            previousDay={previousDay}
+                            alreadyFiltered={alreadyFiltered}
                         />
                     )}
                 />

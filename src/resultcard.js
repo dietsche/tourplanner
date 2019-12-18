@@ -33,7 +33,7 @@ const Card = styled.div`
         white
     ); */
     box-shadow: 1px 1px 3px rgb(100, 100, 100);
-    border: 1px rgb(220, 220, 220) dotted;
+    /* border: 1px rgb(220, 220, 220) dotted; */
     border-radius: 3px;
     background-color: white;
     display: flex;
@@ -60,13 +60,13 @@ const Card = styled.div`
         padding: 2px 5px;
         font-weight: bold;
         text-align: center;
-        margin: calc(15px + 1.5vw) 12px 0 12px;
+        margin: calc(25px + 1.5vw) 12px 0 12px;
     }
     .description {
         font-size: calc(10.5px + 0.4vw);
         color: #17053e;
         text-align: center;
-        margin: calc(1px + 0.5vw) 12px;
+        margin: 0 12px;
         text-align: center;
         @media (min-width: 800px) {
             font-size: 13px;
@@ -77,7 +77,7 @@ const Card = styled.div`
         display: flex;
         justify-content: center;
         flex-wrap: wrap;
-        margin-top: -8px;
+        margin-top: -14px;
         .distance-box {
             display: flex;
             flex-direction: column;
@@ -87,7 +87,8 @@ const Card = styled.div`
             width: 34px;
             height: 38px;
             background-color: white;
-            border: 1px #17053e dotted;
+            /* border: 1px #17053e dotted; */
+            border: 2px rgb(41, 84, 110) solid;
             border-radius: 3px;
             p {
                 font-size: 11px;
@@ -119,31 +120,33 @@ export default function ResultCard(props) {
         <Card>
             <div className="type-bar">
                 {props.favourite && (
-                    <StarIcon style={{ color: "rgb(255,204,0)" }} />
+                    <StarIcon style={{ color: "rgb(255,204,0)", margin: 5 }} />
                 )}
                 {!props.favourite && (
-                    <StarIcon style={{ color: "rgb(220,220,220)" }} />
+                    <StarIcon
+                        style={{ color: "rgb(220,220,220)", margin: 5 }}
+                    />
                 )}
                 <div className="distance-container">
-                    {props.train && (
+                    {props.train && props.distance >= props.train && (
                         <div className="distance-box">
                             <TrainIcon style={{ width: 15 }} />
                             <p>{props.train}</p>
                         </div>
                     )}
-                    {props.car && (
+                    {props.car && props.distance >= props.car && (
                         <div className="distance-box">
                             <DirectionsCarIcon style={{ width: 15 }} />
                             <p>{props.car}</p>
                         </div>
                     )}
-                    {props.foot && (
+                    {props.foot && props.distance >= props.foot && (
                         <div className="distance-box">
                             <DirectionsWalkIcon style={{ width: 15 }} />
                             <p>{props.foot}</p>
                         </div>
                     )}
-                    {props.bike && (
+                    {props.bike && props.distance >= props.bike && (
                         <div className="distance-box">
                             <DirectionsBikeIcon style={{ width: 15 }} />
                             <p>{props.bike}</p>

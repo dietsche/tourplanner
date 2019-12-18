@@ -20,9 +20,11 @@ const DetailsContainer = styled.div`
         cursor: pointer;
     }
     .exit {
+        color: rgb(41, 84, 110);
         font-size: calc(26px + 1vw);
         position: absolute;
-        left: calc(100vw - 30px);
+        left: calc(100vw - 40px);
+        top: 68px;
     }
     .details-text {
         text-align: center;
