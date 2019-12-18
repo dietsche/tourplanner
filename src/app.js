@@ -91,6 +91,15 @@ export default function App() {
         console.log("currentDestinations in App!: ", filteredDestinations);
         console.log("selectedDestination: ", dest);
     }
+    async function changeStarState(id, starState) {
+        console.log("star change on app-level; id: ", id, starState);
+        let changedFavourites = await axios.post(`/update-favourites`, {
+            id: id,
+            favourite: starState
+        });
+        console.log("changedFavourites: ", changedFavourites);
+    }
+
     return (
         <React.Fragment>
             <BrowserRouter>
@@ -157,6 +166,7 @@ export default function App() {
                         <Details
                             filteredDestinations={filteredDestinations}
                             selectedDestination={selectedDestination}
+                            changeStarState={changeStarState}
                             match={match}
                         />
                     )}

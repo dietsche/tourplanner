@@ -5,6 +5,7 @@ import TrainIcon from "@material-ui/icons/Train";
 import DirectionsWalkIcon from "@material-ui/icons/DirectionsWalk";
 import DirectionsCarIcon from "@material-ui/icons/DirectionsCar";
 import DirectionsBikeIcon from "@material-ui/icons/DirectionsBike";
+import StarIcon from "@material-ui/icons/Star";
 
 const Card = styled.div`
     box-sizing: border-box;
@@ -76,6 +77,7 @@ const Card = styled.div`
         display: flex;
         justify-content: center;
         flex-wrap: wrap;
+        margin-top: -8px;
         .distance-box {
             display: flex;
             flex-direction: column;
@@ -96,6 +98,7 @@ const Card = styled.div`
 `;
 
 export default function ResultCard(props) {
+    console.log("props: ", props);
     let descriptionPreview = props.description;
     let lengthPreview = 3 + document.documentElement.clientWidth / 150;
     let indices = [];
@@ -115,6 +118,12 @@ export default function ResultCard(props) {
     return (
         <Card>
             <div className="type-bar">
+                {props.favourite && (
+                    <StarIcon style={{ color: "rgb(255,204,0)" }} />
+                )}
+                {!props.favourite && (
+                    <StarIcon style={{ color: "rgb(220,220,220)" }} />
+                )}
                 <div className="distance-container">
                     {props.train && (
                         <div className="distance-box">

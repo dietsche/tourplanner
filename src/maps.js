@@ -6,6 +6,7 @@ import {
     Marker,
     InfoWindow
 } from "react-google-maps";
+import { keyMap } from "../secrets.json";
 
 const mapStyles = [
     {
@@ -220,7 +221,7 @@ export default function TestMap({ onPositionChange, userLat, userLong }) {
                     userLat={userLat}
                     userLong={userLong}
                     onPositionChange={onPositionChange}
-                    googleMapURL={`https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=AIzaSyBRGDY9ghWbWBS-JTTlxf2UdtwR8cPaJus`}
+                    googleMapURL={`https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=${keyMap}`}
                     loadingElement={<div style={{ height: `100%` }} />}
                     containerElement={
                         <div style={{ height: `100%`, maxWidth: "100%" }} />

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { keyMap } from "../secrets.json";
 
 import {
     withGoogleMap,
@@ -147,7 +148,7 @@ export default function DetailMap({
         <React.Fragment>
             <div style={{ width: "100vw", height: "60vh" }}>
                 <MapWrapped
-                    googleMapURL={`https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=AIzaSyBRGDY9ghWbWBS-JTTlxf2UdtwR8cPaJus`}
+                    googleMapURL={`https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=${keyMap}`}
                     loadingElement={<div style={{ height: `100%` }} />}
                     containerElement={<div style={{ height: `100%` }} />}
                     mapElement={<div style={{ height: `100%` }} />}

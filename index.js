@@ -12,6 +12,7 @@ const path = require("path");
 const s3 = require("./s3");
 const { s3Url } = require("./config.json");
 const fetch = require("node-fetch");
+const { keyMap } = require("./secrets.json");
 
 const diskStorage = multer.diskStorage({
     destination: function(req, file, callback) {
@@ -169,6 +170,8 @@ app.post("/add-destination", async (req, res) => {
     let destLong = long;
 
     try {
+        let favourite = false;
+
         if (destLat == null || destLong == null) {
             let ApiURL = "https://maps.googleapis.com/maps/api/geocode/json?";
             let params = `address=${street}+${nr}+${zip}+${city}&key=AIzaSyBRGDY9ghWbWBS-JTTlxf2UdtwR8cPaJus`;
@@ -199,6 +202,7 @@ app.post("/add-destination", async (req, res) => {
             rain,
             hot,
             cold,
+            favourite,
             req.session.userId
         );
 
@@ -219,6 +223,7 @@ app.post("/add-destination", async (req, res) => {
             rain,
             hot,
             cold,
+            favourite,
             req.session.userId
         );
         console.log("succes, addDestination: ", addDestination);
@@ -231,6 +236,33 @@ app.post("/add-destination", async (req, res) => {
         });
 
         console.log("error in post add destination: ", error);
+    }
+});
+
+app.post("/update-favourites", async (req, res) => {
+    console.log(
+        "update fav runs, parameters: ",
+        req.body.id,
+        req.body.favourite
+    );
+    try {
+        let { id, favourite } = req.body;
+
+        let changedFavourites = await db.changeFavourites(
+            id,
+            req.session.userId,
+            favourite
+        );
+        console.log("changedFavourites: ", changedFavourites);
+        res.json({
+            success: true
+        });
+    } catch (error) {
+        res.json({
+            success: false
+        });
+
+        console.log("error in update favourites: ", error);
     }
 });
 
@@ -293,7 +325,7 @@ app.post("/calculate-distance", async (req, res) => {
     ) {
         console.log("if schleife läuft: berechnung lat-long der destination");
         let ApiURL = "https://maps.googleapis.com/maps/api/geocode/json?";
-        let params = `address=${street}+${nr}+${zip}+${city}&key=AIzaSyBRGDY9ghWbWBS-JTTlxf2UdtwR8cPaJus`;
+        let params = `address=${street}+${nr}+${zip}+${city}&key=${keyMap}`;
         let finalApiURL = `${ApiURL}${encodeURI(params)}`;
         console.log("finalApiURL: ", finalApiURL);
         let response = await fetch(finalApiURL);

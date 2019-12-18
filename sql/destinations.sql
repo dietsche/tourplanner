@@ -19,6 +19,7 @@ CREATE TABLE destinations (
     rain BOOLEAN,
     hot BOOLEAN,
     cold BOOLEAN,
+    favourite BOOLEAN,
     user_id INTEGER NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 

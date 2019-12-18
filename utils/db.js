@@ -48,10 +48,11 @@ exports.addDestination = function(
     rain,
     hot,
     cold,
+    favourite,
     userId
 ) {
     return db.query(
-        "INSERT INTO destinations (title, description, street, nr, city, zip, lat, long, car, train, bike, foot, norain, rain, hot, cold, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17) RETURNING *",
+        "INSERT INTO destinations (title, description, street, nr, city, zip, lat, long, car, train, bike, foot, norain, rain, hot, cold, favourite, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18) RETURNING *",
         [
             title,
             description,
@@ -69,6 +70,7 @@ exports.addDestination = function(
             rain,
             hot,
             cold,
+            favourite,
             userId
         ]
     );
@@ -78,5 +80,12 @@ exports.getDestinationData = function(userId) {
     return db.query(
         `SELECT * FROM destinations WHERE user_id = $1 ORDER BY train DESC NULLS LAST`,
         [userId]
+    );
+};
+
+exports.changeFavourites = function(id, userId, star) {
+    return db.query(
+        `UPDATE destinations SET favourite = $3 WHERE id = $1 AND user_id = $2 RETURNING *`,
+        [id, userId, star]
     );
 };

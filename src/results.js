@@ -522,6 +522,7 @@ export default function Result({ sendDestinationsToApp }) {
                                 rain={dest.rain}
                                 hot={dest.hot}
                                 cold={dest.cold}
+                                favourite={dest.favourite}
                             />
                         </Link>
                     ))}
