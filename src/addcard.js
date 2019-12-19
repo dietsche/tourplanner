@@ -117,7 +117,7 @@ const AddCardContainer = styled.div`
 const CheckboxWrapper = styled.div`
     display: flex;
     align-items: center;
-    margin: auto 1.2vw;
+    margin: auto calc(5px + 1vw);
 `;
 
 const ContainerWeather = styled.div`
@@ -414,17 +414,25 @@ export default function AddCard({ userLat, userLong }) {
                 <CheckboxWrapper>
                     <Input
                         id="outlined"
-                        style={{ width: 120 }}
+                        style={{ width: 100 }}
                         value={state.car}
                         startAdornment={
-                            <InputAdornment position="start">
+                            <InputAdornment
+                                style={{ margin: 0 }}
+                                position="start"
+                            >
                                 <DirectionsCarIcon
                                     style={{ cursor: "pointer" }}
                                 />
                             </InputAdornment>
                         }
                         endAdornment={
-                            <InputAdornment position="end">min</InputAdornment>
+                            <InputAdornment
+                                style={{ margin: 0 }}
+                                position="end"
+                            >
+                                min
+                            </InputAdornment>
                         }
                         name="car"
                         onChange={e => handleChange(e)}
@@ -433,15 +441,23 @@ export default function AddCard({ userLat, userLong }) {
                 <CheckboxWrapper>
                     <Input
                         id="outlined"
-                        style={{ width: 120 }}
+                        style={{ width: 100 }}
                         value={state.train}
                         startAdornment={
-                            <InputAdornment position="start">
+                            <InputAdornment
+                                style={{ margin: 0 }}
+                                position="start"
+                            >
                                 <TrainIcon style={{ cursor: "pointer" }} />
                             </InputAdornment>
                         }
                         endAdornment={
-                            <InputAdornment position="end">min</InputAdornment>
+                            <InputAdornment
+                                style={{ margin: 0 }}
+                                position="end"
+                            >
+                                min
+                            </InputAdornment>
                         }
                         name="train"
                         onChange={e => handleChange(e)}
@@ -450,17 +466,25 @@ export default function AddCard({ userLat, userLong }) {
                 <CheckboxWrapper>
                     <Input
                         id="outlined"
-                        style={{ width: 120 }}
+                        style={{ width: 100 }}
                         value={state.bike}
                         startAdornment={
-                            <InputAdornment position="start">
+                            <InputAdornment
+                                style={{ margin: 0 }}
+                                position="start"
+                            >
                                 <DirectionsBikeIcon
                                     style={{ cursor: "pointer" }}
                                 />
                             </InputAdornment>
                         }
                         endAdornment={
-                            <InputAdornment position="end">min</InputAdornment>
+                            <InputAdornment
+                                style={{ margin: 0 }}
+                                position="end"
+                            >
+                                min
+                            </InputAdornment>
                         }
                         name="bike"
                         onChange={e => handleChange(e)}
@@ -469,17 +493,25 @@ export default function AddCard({ userLat, userLong }) {
                 <CheckboxWrapper>
                     <Input
                         id="outlined"
-                        style={{ width: 120 }}
+                        style={{ width: 100 }}
                         value={state.foot}
                         startAdornment={
-                            <InputAdornment position="start">
+                            <InputAdornment
+                                style={{ margin: 0 }}
+                                position="start"
+                            >
                                 <DirectionsWalkIcon
                                     style={{ cursor: "pointer" }}
                                 />
                             </InputAdornment>
                         }
                         endAdornment={
-                            <InputAdornment position="end">min</InputAdornment>
+                            <InputAdornment
+                                style={{ margin: 0 }}
+                                position="end"
+                            >
+                                min
+                            </InputAdornment>
                         }
                         name="foot"
                         onChange={e => handleChange(e)}

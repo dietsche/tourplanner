@@ -25,7 +25,7 @@ export default class Login extends React.Component {
                     console.log("data.sucess");
                     location.replace("/"); //replace> page in history is replaced in history > you cant go back in browser!!!!
                 } else {
-                    console.log("!!!data.sucess");
+                    console.log("error");
                     this.setState({
                         error: true
                     });

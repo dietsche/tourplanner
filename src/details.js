@@ -16,7 +16,9 @@ const DetailsContainer = styled.div`
     flex-direction: column;
     height: calc(100vh - 50px);
     .star-container {
-        margin: 20px;
+        position: absolute;
+        left: 20px;
+        top: 68px;
         cursor: pointer;
     }
     .exit {
@@ -29,9 +31,15 @@ const DetailsContainer = styled.div`
     .details-text {
         text-align: center;
         padding: 10px;
+        margin-top: 10px;
         h1 {
-            font-size: 20px;
+            font-size: 19px;
+            margin: 25px auto;
         }
+        p {
+            font-size: 15px;
+        }
+
         .distance-container {
             width: 100%;
             display: flex;
@@ -42,13 +50,13 @@ const DetailsContainer = styled.div`
                 justify-content: center;
                 align-items: center;
                 margin: 6px 10px;
-                width: 60px;
-                height: 30px;
+                width: 50px;
+                height: 27px;
                 background-color: rgb(252, 252, 252);
                 border: 1px #17053e dotted;
                 border-radius: 3px;
                 p {
-                    font-size: 14px;
+                    font-size: 13px;
                     margin: 5px;
                 }
             }

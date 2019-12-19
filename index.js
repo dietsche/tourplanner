@@ -6,34 +6,8 @@ const cookieSession = require("cookie-session");
 const db = require("./utils/db"); //we need it???
 const { hash, compare } = require("./utils/bc");
 const csurf = require("csurf");
-const multer = require("multer");
-const uidSafe = require("uid-safe");
-const path = require("path");
-const s3 = require("./s3");
-const { s3Url } = require("./config.json");
 const fetch = require("node-fetch");
-const { keyMap } = require("./secrets.json");
-
-const diskStorage = multer.diskStorage({
-    destination: function(req, file, callback) {
-        callback(null, __dirname + "/uploads");
-    },
-    filename: function(req, file, callback) {
-        uidSafe(24).then(function(uid) {
-            callback(null, uid + path.extname(file.originalname));
-        });
-    }
-});
-
-const uploader = multer({
-    storage: diskStorage,
-    limits: {
-        fileSize: 5000000 //2 MB limit!
-    }
-});
-
-//add bodyParsing!?
-//user table : petition + image (null); bio
+const { keyMap, keyWeather } = require("./secrets.json");
 
 app.use(compression());
 app.use(express.json());
@@ -76,7 +50,7 @@ app.post("/registration", async (req, res) => {
     const { first, last, email, password, street, nr, city, zip } = req.body;
 
     let ApiURL = "https://maps.googleapis.com/maps/api/geocode/json?";
-    let params = `address=${street}+${nr}+${zip}+${city}&key=AIzaSyBRGDY9ghWbWBS-JTTlxf2UdtwR8cPaJus`;
+    let params = `address=${street}+${nr}+${zip}+${city}&key=${keyMap}`;
     let finalApiURL = `${ApiURL}${encodeURI(params)}`;
 
     console.log("finalApiURL:\n");
@@ -174,7 +148,7 @@ app.post("/add-destination", async (req, res) => {
 
         if (destLat == null || destLong == null) {
             let ApiURL = "https://maps.googleapis.com/maps/api/geocode/json?";
-            let params = `address=${street}+${nr}+${zip}+${city}&key=AIzaSyBRGDY9ghWbWBS-JTTlxf2UdtwR8cPaJus`;
+            let params = `address=${street}+${nr}+${zip}+${city}&key=${keyMap}`;
             let finalApiURL = `${ApiURL}${encodeURI(params)}`;
             console.log("finalApiURL:");
             console.log(finalApiURL);
@@ -343,7 +317,7 @@ app.post("/calculate-distance", async (req, res) => {
         try {
             let ApiURL =
                 "https://maps.googleapis.com/maps/api/distancematrix/json?";
-            let params = `origins=${BaseLocation}&destinations=${TargetLocation}&mode=${Mode[i]}&key=AIzaSyBRGDY9ghWbWBS-JTTlxf2UdtwR8cPaJus`;
+            let params = `origins=${BaseLocation}&destinations=${TargetLocation}&mode=${Mode[i]}&key=${keyMap}`;
             let finalApiURL = await `${ApiURL}${encodeURI(params)}`;
             console.log("finalApiURL: ", finalApiURL);
             let response = await fetch(finalApiURL);
@@ -369,7 +343,7 @@ app.get("/getweather", async (req, res) => {
     try {
         const proxy = "https://secret-ocean-49799.herokuapp.com/";
         let weatherData = await fetch(
-            `${proxy}https://api.darksky.net/forecast/b39a87ea430e5c07642983f67ab8bb76/52.5200,13.404954?units=si`
+            `${proxy}https://api.darksky.net/forecast/${keyWeather}/52.5200,13.404954?units=si`
         );
         const weatherJson = await weatherData.json();
         console.log(weatherJson);

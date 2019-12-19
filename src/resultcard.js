@@ -43,34 +43,52 @@ const Card = styled.div`
     .type-bar {
         height: 51.6px;
         width: 100%;
-
+        margin-bottom: 18px;
         background-color: rgb(41, 84, 110);
     }
 
     .title {
-        font-size: calc(12px + 0.35vw);
-        text-transform: uppercase;
-        @media (min-width: 800px) {
-            font-size: 15px;
-        }
-        @media (min-width: 350px) and (max-width: 440px) {
-            font-size: calc(11px + 0.35vw);
-        }
-        color: rgb(238, 56, 64);
-        padding: 2px 5px;
-        font-weight: bold;
+        position: relative;
+        height: 37px;
+        max-height: 37px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         text-align: center;
-        margin: calc(25px + 1.5vw) 12px 0 12px;
+        padding: 2px 5px;
+        margin: 1.5vw 12px 1vw 12px;
+        @media (min-width: 800px) {
+            margin: 10px 12px 12px 12px;
+        }
+        h2 {
+            text-transform: uppercase;
+            font-size: calc(12px + 0.35vw);
+            font-weight: bold;
+            color: rgb(238, 56, 64);
+            margin-bottom: 0;
+            @media (min-width: 800px) {
+                font-size: 15px;
+            }
+            @media (min-width: 350px) and (max-width: 440px) {
+                font-size: calc(11px + 0.35vw);
+            }
+        }
     }
     .description {
-        font-size: calc(10.5px + 0.4vw);
-        color: #17053e;
-        text-align: center;
+        display: flex;
+        align-items: start;
+        justify-content: center;
+        p {
+            font-size: calc(9.5px + 0.3vw);
+            color: black;
+            margin-top: calc(5px + 0.5vw);
+            @media (min-width: 800px) {
+                font-size: 12px;
+                margin-top: 0;
+            }
+        }
         margin: 0 12px;
         text-align: center;
-        @media (min-width: 800px) {
-            font-size: 13px;
-        }
     }
     .distance-container {
         width: 100%;
@@ -84,6 +102,9 @@ const Card = styled.div`
             justify-content: center;
             align-items: center;
             margin: 6px calc(1px + 0.5vw);
+            @media (min-width: 800px) {
+                margin: 6px 5px;
+            }
             width: 34px;
             height: 38px;
             background-color: white;
@@ -101,18 +122,23 @@ const Card = styled.div`
 export default function ResultCard(props) {
     console.log("props: ", props);
     let descriptionPreview = props.description;
-    let lengthPreview = 3 + document.documentElement.clientWidth / 150;
+    let lengthPreview = 2 + document.documentElement.clientWidth / 200;
     let indices = [];
     for (let i = 0; i < descriptionPreview.length; i++) {
-        if (descriptionPreview[i] === " ") indices.push(i);
+        if (descriptionPreview[i] === " ") {
+            indices.push(i);
+        }
     }
     console.log(indices.length);
-    if (indices.length > lengthPreview) {
+    if (indices.length > lengthPreview && props.description.length > 40) {
+        let res;
         for (let i = 0; i < indices.length - lengthPreview; i++) {
-            let res = descriptionPreview.split(" "); //split by space
+            res = descriptionPreview.split(" "); //split by space
+            console.log("res for i: ", i, res);
             res.pop(); //remove last element
-            descriptionPreview = res.join(" ") + " [...]";
+            descriptionPreview = res.join(" ");
         }
+        descriptionPreview = res.join(" ") + " [...]";
     }
     console.log("descriptionPreview: ", descriptionPreview);
 
@@ -154,7 +180,9 @@ export default function ResultCard(props) {
                     )}
                 </div>
             </div>
-            <h2 className="title">{props.title}</h2>
+            <div className="title">
+                <h2>{props.title}</h2>
+            </div>{" "}
             <div className="description">
                 <p>{descriptionPreview}</p>
             </div>

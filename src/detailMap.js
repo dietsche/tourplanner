@@ -146,7 +146,7 @@ export default function DetailMap({
 }) {
     return (
         <React.Fragment>
-            <div style={{ width: "100vw", height: "60vh" }}>
+            <div style={{ width: "100vw", height: "55vh" }}>
                 <MapWrapped
                     googleMapURL={`https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=${keyMap}`}
                     loadingElement={<div style={{ height: `100%` }} />}
