@@ -3,149 +3,15 @@ import {
     withGoogleMap,
     withScriptjs,
     GoogleMap,
-    Marker,
-    InfoWindow
+    Marker
 } from "react-google-maps";
 import { keyMap } from "../secrets.json";
-
-const mapStyles = [
-    {
-        featureType: "water",
-        elementType: "geometry",
-        stylers: [
-            {
-                color: "#004358"
-            }
-        ]
-    },
-    {
-        featureType: "landscape",
-        elementType: "geometry",
-        stylers: [
-            {
-                color: "#1f8a70"
-            }
-        ]
-    },
-    {
-        featureType: "poi",
-        elementType: "geometry",
-        stylers: [
-            {
-                color: "#1f8a70"
-            }
-        ]
-    },
-    {
-        featureType: "road.highway",
-        elementType: "geometry",
-        stylers: [
-            {
-                color: "#fd7400"
-            }
-        ]
-    },
-    {
-        featureType: "road.arterial",
-        elementType: "geometry",
-        stylers: [
-            {
-                color: "#1f8a70"
-            },
-            {
-                lightness: -20
-            }
-        ]
-    },
-    {
-        featureType: "road.local",
-        elementType: "geometry",
-        stylers: [
-            {
-                color: "#1f8a70"
-            },
-            {
-                lightness: -17
-            }
-        ]
-    },
-    {
-        elementType: "labels.text.stroke",
-        stylers: [
-            {
-                color: "#ffffff"
-            },
-            {
-                visibility: "on"
-            },
-            {
-                weight: 0.9
-            }
-        ]
-    },
-    {
-        elementType: "labels.text.fill",
-        stylers: [
-            {
-                visibility: "on"
-            },
-            {
-                color: "#ffffff"
-            }
-        ]
-    },
-    {
-        featureType: "poi",
-        elementType: "labels",
-        stylers: [
-            {
-                visibility: "simplified"
-            }
-        ]
-    },
-    {
-        elementType: "labels.icon",
-        stylers: [
-            {
-                visibility: "off"
-            }
-        ]
-    },
-    {
-        featureType: "transit",
-        elementType: "geometry",
-        stylers: [
-            {
-                color: "#1f8a70"
-            },
-            {
-                lightness: -10
-            }
-        ]
-    },
-    {},
-    {
-        featureType: "administrative",
-        elementType: "geometry",
-        stylers: [
-            {
-                color: "#1f8a70"
-            },
-            {
-                weight: 0.7
-            }
-        ]
-    }
-];
 
 export function Map({ onPositionChange, userLat, userLong }) {
     const [markerLat, setMarkerLat] = useState(null);
     const [markerLong, setMarkerLong] = useState(null);
-    console.log("userLat und Lon gin map: ", userLat, userLong);
 
     function changeCoordinates(event) {
-        console.log("lat", event.latLng.lat());
-        console.log("lng", event.latLng.lng());
         setMarkerLat(event.latLng.lat());
         setMarkerLong(event.latLng.lng());
     }
@@ -173,8 +39,6 @@ export function Map({ onPositionChange, userLat, userLong }) {
                     lat: Math.round(userLat * 10000) / 10000,
                     lng: Math.round(userLong * 10000) / 10000
                 }}
-
-                // defaultOptions={{ styles: mapStyles }}
             >
                 <Marker
                     key={1}

@@ -17,17 +17,17 @@ export const Form = styled.div`
         font-size: 17px;
     }
     .street {
-        width: 130px;
+        width: 140px;
     }
 
     .nr {
         width: 30px;
     }
     .zip {
-        width: 55px;
+        width: 70px;
     }
     .city {
-        width: 110px;
+        width: 100px;
     }
     button {
         margin: 15px auto;

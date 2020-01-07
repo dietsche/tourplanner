@@ -1,5 +1,5 @@
 import React from "react";
-import axios from "./axios"; //not directly from axis, but our own version
+import axios from "./axios";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { Form } from "./welcome";
@@ -10,7 +10,6 @@ import {
     FormLabel,
     FormGroup
 } from "@material-ui/core";
-// import { spacing, typography } from "@material-ui/system";
 
 const TextFieldWrapper = styled.div`
     padding: 10px;
@@ -39,12 +38,9 @@ export default class Register extends React.Component {
     }
 
     submit() {
-        console.log("registration.js: Submit-func running");
-        console.log(this.first);
-        console.log(this.last);
         axios
             .post("/registration", {
-                email: this.email, //State ist eigentliche for detecting changes on screen and reacting
+                email: this.email,
                 password: this.password,
                 first: this.first,
                 last: this.last,
@@ -54,10 +50,8 @@ export default class Register extends React.Component {
                 zip: this.zip
             })
             .then(({ data }) => {
-                console.log("registration.js: axios-post .then");
                 if (data.success) {
-                    console.log("...");
-                    location.replace("/"); //replace> page in history is replaced in history > you cant go back in browser!!!!
+                    location.replace("/");
                 } else {
                     this.setState({
                         error: true
@@ -66,8 +60,6 @@ export default class Register extends React.Component {
             });
     }
     handleChange(inputElement) {
-        console.log(inputElement.target.name);
-        console.log(inputElement.target.value);
         this[inputElement.target.name] = inputElement.target.value;
     }
     render() {

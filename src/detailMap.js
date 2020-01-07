@@ -1,12 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { keyMap } from "../secrets.json";
 
 import {
     withGoogleMap,
     withScriptjs,
     GoogleMap,
-    Marker,
-    InfoWindow
+    Marker
 } from "react-google-maps";
 import { Link } from "react-router-dom";
 
@@ -26,9 +25,6 @@ export function Map({
         }
     }, []);
 
-    filteredDestinations.map(dest => {
-        console.log(dest);
-    });
     let url = `/img/standard_empty.png`;
     let filteredDestinationsWithoutId = [];
     let destinationWithId = [];
@@ -39,25 +35,12 @@ export function Map({
             destinationWithId.push(item);
         }
     });
-    // filteredDestinationsWithoutId.map(dest => {
-    //     console.log("without id: ", dest);
-    // });
-    console.log(
-        "filteredDestinationsWithoutId ",
-        filteredDestinationsWithoutId
-    );
-    console.log("destinationWitId ", destinationWithId);
     let latCurrent = Math.round(currentDestination.lat * 10000) / 10000;
     let longCurrent = Math.round(currentDestination.long * 10000) / 10000;
 
     let userLat = 52.5024756;
     let userLong = 13.4850351;
 
-    // function handleMarkerClick(id) {
-    //     console.log("dest.id - showINfo: ", id);
-    //     console.log("marrkers: ", markers);
-    //     // location.href = "/details/" + id;
-    // }
     return (
         <div>
             <GoogleMap
@@ -70,8 +53,6 @@ export function Map({
                 defaultCenter={{ lat: latCurrent, lng: longCurrent }}
                 filteredDestinations={filteredDestinations}
                 id={id}
-
-                // defaultOptions={{ styles: mapStyles }}
             >
                 <Marker
                     key={100000}
@@ -109,7 +90,6 @@ export function Map({
                                 lng: Math.round(dest.long * 10000) / 10000
                             }}
                             onClick={() => {
-                                // location.href = "/details/" + dest.id;
                                 handleMarkerClick(dest.id);
                             }}
                             onMouseOver={() => {

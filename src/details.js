@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "./axios"; //not directly from axis, but our own version
+import axios from "./axios";
 import styled from "styled-components";
 import DetailMap from "./detailMap";
 import { BrowserRouter as Router, Route, Switch, Link } from "react-router-dom";
@@ -30,7 +30,7 @@ const DetailsContainer = styled.div`
     }
     .details-text {
         text-align: center;
-        padding: 10px;
+        padding: 0 20px;
         margin-top: 10px;
         h1 {
             font-size: 19px;
@@ -88,15 +88,9 @@ export function Details({
 
         id = match.params.id;
         setCurrentDestination(filteredDestinations.find(obj => obj.id == id));
-        // return () => {
-        //     console.log("unmount");
-        //     id = null;
-        //     setCurrentDesination({});
-        // };
     }, [id]);
 
     function handleMarkerClick(id) {
-        console.log("dest.id - showINfo: ", id);
         setCurrentDestination(filteredDestinations.find(obj => obj.id == id));
     }
     function changeStar() {
@@ -108,7 +102,6 @@ export function Details({
             : setCurrentDestination(currentDestination => {
                   return { ...currentDestination, favourite: true };
               });
-        console.log("ChangeStar in details running");
     }
 
     return (
@@ -147,16 +140,16 @@ export function Details({
                                 <p>{currentDestination.car}</p>
                             </div>
                         )}
-                        {currentDestination.foot && (
-                            <div className="distance-box">
-                                <DirectionsWalkIcon style={{ width: 22 }} />
-                                <p>{currentDestination.foot}</p>
-                            </div>
-                        )}
                         {currentDestination.bike && (
                             <div className="distance-box">
                                 <DirectionsBikeIcon style={{ width: 22 }} />
                                 <p>{currentDestination.bike}</p>
+                            </div>
+                        )}
+                        {currentDestination.foot && (
+                            <div className="distance-box">
+                                <DirectionsWalkIcon style={{ width: 22 }} />
+                                <p>{currentDestination.foot}</p>
                             </div>
                         )}
                     </div>
@@ -175,4 +168,3 @@ export function Details({
         </>
     );
 }
-// <code>{JSON.stringify(match, null, 2)}</code>{" "}

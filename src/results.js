@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "./axios"; //not directly from axis, but our own version
+import axios from "./axios";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { Form } from "./start";
@@ -17,8 +17,6 @@ import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ScheduleIcon from "@material-ui/icons/Schedule";
 var moment = require("moment");
-
-// import { spacing, typography } from "@material-ui/system";
 
 const FilterBar = styled.div`
     display: flex;
@@ -58,7 +56,6 @@ const WeatherContainer = styled.div`
             cursor: pointer;
             margin: auto 5vw;
         }
-
 `;
 
 const DistanceContainer = styled.div`
@@ -130,6 +127,7 @@ const TransportContainer = styled.div`
         }
     }
 `;
+
 const SpinnerContainer = styled.div`
     height: 80vh;
     display: flex;
@@ -226,12 +224,8 @@ export default function Result({
     const [day, setDay] = useState(0);
 
     useEffect(() => {
-        console.log("componentDidMount!");
-
         (async () => {
             const { data } = await axios.get("/getweather");
-            console.log("data.weatherData: ", data.weatherData);
-
             const weatherObject = {};
             for (let i = 0; i < 5; i++) {
                 weatherObject[i] = {
@@ -243,7 +237,6 @@ export default function Result({
                     summary: data.weatherData.daily.data[i].summary
                 };
             }
-            console.log("WEATHEROBJECT: ", weatherObject);
             setWeatherData({
                 data: weatherObject
             });
@@ -251,17 +244,9 @@ export default function Result({
     }, []);
 
     useEffect(() => {
-        console.log("componentDidMount!");
-        console.log(
-            "FilteredDestinations when comp mountS: ",
-            filteredDestinations
-        );
-        console.log("alreadyFiltered: ", alreadyFiltered);
-
         (async () => {
             const { data } = await axios.get("/api/destinations");
-            console.log("data destinations: ", data);
-            console.log("dest ROWS: ", data.destinationData);
+            data.destinationData.sort((a, b) => (a.train < b.train ? -1 : 1));
             data.destinationData.sort(a => (a.favourite ? -1 : 1));
             setDestinations(data.destinationData);
         })();
@@ -298,31 +283,18 @@ export default function Result({
     }
 
     useEffect(() => {
-        console.log("WEATHER DATA ", weatherData);
-        console.log("WEATHER DATA.data ", weatherData.data);
-        console.log("WEATHER DATA.length ", weatherData.data[4]);
         if (weatherData.data[4]) {
-            console.log(
-                "weatherData.data[0].precipIntensity: ",
-                weatherData.data[day].precipIntensity,
-                day
-            );
             if (weatherData.data[day].precipIntensity > 0.03) {
                 setRain(true);
-                console.log("regentag!");
             } else {
                 setRain(false);
             }
             if (weatherData.data[day].temperatureHigh < 10) {
-                console.log(
-                    "kaltkaltkaltkaltkaltkaltkaltkaltkaltkaltkaltkaltkaltkaltkaltkalt"
-                );
                 setCold(true);
             } else {
                 setCold(false);
             }
             if (weatherData.data[day].temperatureHigh > 20) {
-                console.log("kalt");
                 setHot(true);
             } else {
                 setHot(false);
@@ -331,18 +303,6 @@ export default function Result({
     }, [weatherData.data, day, hot, cold, rain, norain]);
 
     useEffect(() => {
-        console.log("USE EFFECT RUNS");
-        console.log("log destinations in use Effect: ", destinations);
-
-        destinations.map(dest => {
-            console.log(
-                "weather check for destinations: ",
-                (!rain || (rain && dest.rain)) &&
-                    (!cold || (cold && dest.cold)) &&
-                    (!hot || (hot && dest.hot))
-            );
-        });
-
         setFilteredDestinations(
             destinations.filter(
                 dest =>
@@ -354,12 +314,6 @@ export default function Result({
                     (!cold || (cold && dest.cold)) &&
                     (!hot || (hot && dest.hot))
             )
-            // .sort((a, b) =>
-            //     Math.min[(a.car, a.train, a.bike, a.foot)] >
-            //     Math.min[(b.car, b.train, b.bike, b.foot)]
-            //         ? 1
-            //         : -1
-            // )
         );
     }, [
         destinations,
@@ -375,7 +329,6 @@ export default function Result({
     ]);
 
     function sendDataToApp(dest) {
-        console.log("SENDING");
         sendDestinationsToApp(
             filteredDestinations,
             distance,
@@ -385,9 +338,8 @@ export default function Result({
             bike,
             foot,
             dest
-        ); //nicht aktueller Stand der hier verschickt wird: (1) immer ein durchlauf hinterher + (2)WEtterdaten fehlen noch!!!
+        );
     }
-    console.log("cold === dest.cold: ", cold, destinations);
     if (!weatherData.data[4]) {
         return (
             <SpinnerContainer>
@@ -483,8 +435,9 @@ export default function Result({
                             <div>
                                 <DistanceSlider
                                     onChange={(e, val) => {
-                                        console.log("val ", val);
-                                        setDistance(val);
+                                        val < 60
+                                            ? setDistance(val)
+                                            : setDistance(999);
                                     }}
                                     valueLabelDisplay="off"
                                     aria-label="pretto slider"
@@ -539,7 +492,7 @@ export default function Result({
                     <div className="no-results">
                         <p>Welcome to PiTou!</p>{" "}
                         <p>
-                            <a href="/addcard">Add Destinations</a> to your
+                            <a href="/addcard">Add destinations</a> to your
                         </p>
                         collection!
                     </div>

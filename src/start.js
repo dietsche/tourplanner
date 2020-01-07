@@ -9,7 +9,6 @@ const GlobalStyle = createGlobalStyle`
     body {
         margin: 0;
         font-family: 'Open Sans', sans-serif;
-        // background-color: #605d5d;
         background-color: rgb(242, 242, 242);
         width: 100vw;
     }
@@ -33,12 +32,5 @@ if (location.pathname != "/welcome") {
         </React.Fragment>
     );
 }
-
-// let elem = (
-//     <React.Fragment>
-//         <App />
-//         <GlobalStyle />
-//     </React.Fragment>
-// );
 
 ReactDOM.render(elem, document.querySelector("main"));

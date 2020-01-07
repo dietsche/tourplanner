@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import axios from "./axios"; //not directly from axis, but our own version
+import axios from "./axios";
 import styled from "styled-components";
 import { ThemeProvider } from "styled-components";
 import Box from "@material-ui/core/Box";
@@ -21,6 +21,7 @@ import DirectionsCarIcon from "@material-ui/icons/DirectionsCar";
 import DirectionsBikeIcon from "@material-ui/icons/DirectionsBike";
 import TestMap from "./maps";
 import { Map } from "./maps";
+import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 
 const BackgroundLayer = styled.div`
     display: flex;
@@ -93,15 +94,22 @@ const AddCardContainer = styled.div`
     }
     .on-click {
         cursor: pointer;
-        color: rgb(238, 56, 64);
         text-decoration: underline;
     }
     .map-text {
         margin-top: 0;
     }
+    .saved-coordinates {
+        display: flex;
+        margin-left: 5px;
+        h2 {
+            margin-top: 1px;
+        }
+    }
     .saved {
         color: green;
     }
+
     .instructions {
         color: rgb(238, 56, 64);
     }
@@ -141,33 +149,17 @@ export default function AddCard({ userLat, userLong }) {
     const [error, setError] = useState(false);
 
     function changeWeather(str) {
-        console.log(event.target.checked);
         setState({ ...state, [str]: event.target.checked });
-        // if (str == "norain") {
-        //     norain ? setNorain(false) : setNorain(true);
-        // } else if (str == "rain") {
-        //     rain ? setRain(false) : setRain(true);
-        // } else if (str == "bike") {
-        //     bike ? setBike(false) : setBike(true);
-        // } else if (str == "foot") {
-        //     foot ? setFoot(false) : setFoot(true);
     }
 
     function handleChange(inputElement) {
         inputElement.preventDefault();
-        console.log("inputElement.target.value: ", inputElement.target.value);
         setState({
             ...state,
             [inputElement.target.name]: inputElement.target.value
         });
-        // currentInput = {
-        //     ...currentInput,
-        //     [inputElement.target.name]: inputElement.target.value
-        // };
-        // console.log("input obj: ", inputs, inputs.title, inputs.description);
     }
     function submit() {
-        console.log("state ", state);
         let {
             title,
             description,
@@ -186,38 +178,6 @@ export default function AddCard({ userLat, userLong }) {
             hot,
             cold
         } = state;
-        console.log("hallo");
-        // if (car === "" || isNaN(car)) {
-        //     affacar = null;
-        // }
-        // if (train === "" || isNaN(train)) {
-        //     train = null;
-        // }
-        // if (bike === "" || isNaN(bike)) {
-        //     bike = null;
-        // }
-        // if (foot === "" || isNaN(foot)) {
-        //     foot = null;
-        // }
-        //
-        console.log(
-            title,
-            description,
-            street,
-            nr,
-            zip,
-            city,
-            lat,
-            long,
-            car,
-            train,
-            bike,
-            foot,
-            norain,
-            rain,
-            hot,
-            cold
-        );
         axios
             .post("/add-destination", {
                 title: title,
@@ -239,8 +199,7 @@ export default function AddCard({ userLat, userLong }) {
             })
             .then(({ data }) => {
                 if (data.success) {
-                    console.log("data", data);
-                    location.replace("/"); //replace> page in history is replaced in history > you cant go back in browser!!!!
+                    location.replace("/");
                 } else {
                     setError(true);
                 }
@@ -253,7 +212,6 @@ export default function AddCard({ userLat, userLong }) {
 
     async function calculateDistance() {
         try {
-            console.log("lat ling in function???: ", state.lat, state.long);
             let response = await axios.post("/calculate-distance", {
                 latitude: state.lat,
                 longitude: state.long,
@@ -264,7 +222,6 @@ export default function AddCard({ userLat, userLong }) {
                 zip: state.zip,
                 city: state.city
             });
-            console.log("RESPONSE: ", response.data.time);
             let car = Math.round(response.data.time[0] / 60);
             let train = Math.round(response.data.time[1] / 60);
             let bike = Math.round(response.data.time[2] / 60);
@@ -288,46 +245,21 @@ export default function AddCard({ userLat, userLong }) {
                 bike: bike,
                 foot: foot
             });
-
-            // if (!isNaN(response.data.time[0]) && response.data.time[0] > 0) {
-            // setState({
-            //     ...state
-            // });
-            // }
-            // if (!isNaN(response.data.time[1]) && response.data.time[1] > 0) {
-            // setState({
-            //     ...state
-            // });
-            // }
-            // if (
-            //     !isNaN(response.data.time[2]) &&
-            //     response.data.time[2] > 0 &&
-            //     response.data.time[2] / 60 < 180
-            // ) {
-            //     setState({
-            //         ...state
-            //     });
-            // }
         } catch (err) {
             console.log(err);
         }
     }
 
     function onPositionChange(lat, long) {
-        console.log("coordinates received!!?: ", lat, long);
         setState({
             ...state,
             lat: lat,
             long: long
         });
-        // setMapView(false);
         setLocationSuccess(true);
     }
 
-    useEffect(() => {
-        console.log("componentDidMount!");
-        console.log("userLATLONG???", userLat, userLong);
-    }, [userLat, userLong]);
+    useEffect(() => {}, [userLat, userLong]);
 
     return (
         <BackgroundLayer>
@@ -389,7 +321,13 @@ export default function AddCard({ userLat, userLong }) {
                     </div>
                 )}
                 {mapView && locationSuccess && (
-                    <h2 className="saved map-text"> Coordinates saved!</h2>
+                    <div className="saved-coordinates">
+                        <CheckCircleIcon
+                            fontSize="small"
+                            style={{ color: "green" }}
+                        />
+                        <h2 className="saved map-text"> Coordinates saved!</h2>
+                    </div>
                 )}{" "}
                 {mapView && !locationSuccess && (
                     <h2 className="instructions map-text">
@@ -408,7 +346,7 @@ export default function AddCard({ userLat, userLong }) {
                 )}
                 <h2>
                     <span className="on-click" onClick={calculateDistance}>
-                        Calculate Distance
+                        Calculate travel time
                     </span>{" "}
                 </h2>
                 <CheckboxWrapper>
@@ -549,7 +487,6 @@ export default function AddCard({ userLat, userLong }) {
                             checked={state.hot}
                             color="default"
                             onClick={() => changeWeather("hot")}
-                            // onChange={handleChange("gilad")}
                         />
 
                         <img

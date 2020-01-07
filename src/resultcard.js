@@ -1,5 +1,5 @@
 import React from "react";
-import axios from "./axios"; //not directly from axis, but our own version
+import axios from "./axios";
 import styled from "styled-components";
 import TrainIcon from "@material-ui/icons/Train";
 import DirectionsWalkIcon from "@material-ui/icons/DirectionsWalk";
@@ -22,18 +22,7 @@ const Card = styled.div`
         max-height: 200px;
     }
     margin: 1vw;
-    /* background-image: linear-gradient(
-        rgb(238, 56, 64),
-        rgb(238, 56, 64),
-        white,
-        white,
-        white,
-        white,
-        white,
-        white
-    ); */
     box-shadow: 1px 1px 3px rgb(100, 100, 100);
-    /* border: 1px rgb(220, 220, 220) dotted; */
     border-radius: 3px;
     background-color: white;
     display: flex;
@@ -108,7 +97,6 @@ const Card = styled.div`
             width: 34px;
             height: 38px;
             background-color: white;
-            /* border: 1px #17053e dotted; */
             border: 2px rgb(41, 84, 110) solid;
             border-radius: 3px;
             p {
@@ -120,7 +108,6 @@ const Card = styled.div`
 `;
 
 export default function ResultCard(props) {
-    console.log("props: ", props);
     let descriptionPreview = props.description;
     let lengthPreview = 2 + document.documentElement.clientWidth / 200;
     let indices = [];
@@ -129,18 +116,15 @@ export default function ResultCard(props) {
             indices.push(i);
         }
     }
-    console.log(indices.length);
     if (indices.length > lengthPreview && props.description.length > 40) {
         let res;
         for (let i = 0; i < indices.length - lengthPreview; i++) {
-            res = descriptionPreview.split(" "); //split by space
-            console.log("res for i: ", i, res);
-            res.pop(); //remove last element
+            res = descriptionPreview.split(" ");
+            res.pop();
             descriptionPreview = res.join(" ");
         }
         descriptionPreview = res.join(" ") + " [...]";
     }
-    console.log("descriptionPreview: ", descriptionPreview);
 
     return (
         <Card>
@@ -166,16 +150,16 @@ export default function ResultCard(props) {
                             <p>{props.car}</p>
                         </div>
                     )}
-                    {props.foot && props.distance >= props.foot && (
-                        <div className="distance-box">
-                            <DirectionsWalkIcon style={{ width: 15 }} />
-                            <p>{props.foot}</p>
-                        </div>
-                    )}
                     {props.bike && props.distance >= props.bike && (
                         <div className="distance-box">
                             <DirectionsBikeIcon style={{ width: 15 }} />
                             <p>{props.bike}</p>
+                        </div>
+                    )}
+                    {props.foot && props.distance >= props.foot && (
+                        <div className="distance-box">
+                            <DirectionsWalkIcon style={{ width: 15 }} />
+                            <p>{props.foot}</p>
                         </div>
                     )}
                 </div>

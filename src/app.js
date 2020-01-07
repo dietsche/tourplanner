@@ -1,19 +1,17 @@
 import React, { useState, useEffect } from "react";
-import axios from "./axios"; //not directly from axis, but our own version
-import { BrowserRouter, Route } from "react-router-dom"; //Do I need it here???
+import axios from "./axios";
+import { BrowserRouter, Route } from "react-router-dom";
 import styled from "styled-components";
 import AddCard from "./addcard";
 import Results from "./results";
 import { Details } from "./details";
 import TestMap from "./maps";
-//delete later
 import Registration from "./registration";
 import Login from "./login";
 import Button from "@material-ui/core/Button";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 
-console.log("ENV ", process.env.API_KEY);
 const Header = styled.div`
     display: flex;
     justify-content: space-between;
@@ -42,6 +40,7 @@ const Header = styled.div`
         font-size: 12px;
         cursor: pointer;
         margin-top: -5px;
+        letter-spacing: 1px;
     }
 `;
 
@@ -74,7 +73,6 @@ export default function App() {
     useEffect(() => {
         (async () => {
             const { data } = await axios.get(`/api/user/`);
-            console.log("userDATA: ", data);
             setFirst(data.first);
             setLast(data.last);
             setInitials(data.first.charAt(0) + data.last.charAt(0));
@@ -111,17 +109,13 @@ export default function App() {
         setPreviousFoot(foot);
         setSelectedDestination(dest);
         setAlreadyFiltered(true);
-        console.log("currentDestinations in App!: ", filteredDestinations);
-        console.log("selectedDestination: ", dest);
     }
 
     async function changeStarState(id, starState) {
-        console.log("star change on app-level; id: ", id, starState);
         let changedFavourites = await axios.post(`/update-favourites`, {
             id: id,
             favourite: starState
         });
-        console.log("changedFavourites: ", changedFavourites);
     }
 
     return (
