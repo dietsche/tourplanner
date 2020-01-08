@@ -29,16 +29,21 @@ React-based single page application, where users can collect trip ideas, filter 
 # Preview
 
 Login Page
+
 <img src="/public/img/pitou_login.png" width="35%"/>
 
 Adding new destinations: Users can enter address or mark destination on a map. The travel time to the destination is automatically calculated for different transport modes.  
+
 <img src="/public/img/pitou_add_destination.png" width="35%"/>
 
 Results: Overview over results with travel distance and preview of description. The results are automatically filtered according to the weather conditions.
-<img src="/public/img/results.png" width="35%"/>
+
+<img src="/public/img/pitou_results.png" width="35%"/>
 
 Filter: Users can change the day and additionally filter the results by maximum travel time and by mode of transportion.
-<img src="/public/img/filter.png" width="35%"/>
+
+<img src="/public/img/pitou_filter.png" width="35%"/>
 
 Detail View
-<img src="/public/img/detail_view.png" width="35%"/>
+
+<img src="/public/img/pitou_detail_view.png" width="35%"/>
